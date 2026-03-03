@@ -4,646 +4,141 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🚀 Podcast Studio</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --space: #0a0e1a;
-    --deep: #060912;
-    --nebula: #1a1f35;
-    --glow: #4fc3f7;
-    --glow2: #7c4dff;
-    --star: #e8f4fd;
-    --muted: #5a6a8a;
-    --red: #ff4569;
-    --green: #00e676;
-    --gold: #ffd54f;
-    --card: rgba(255,255,255,0.04);
-    --border: rgba(79,195,247,0.15);
+    --deep: #060912; --glow: #4fc3f7; --glow2: #7c4dff;
+    --star: #e8f4fd; --muted: #5a6a8a; --red: #ff4569;
+    --green: #00e676; --gold: #ffd54f;
+    --card: rgba(255,255,255,0.04); --border: rgba(79,195,247,0.15);
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--deep);
-    color: var(--star);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Starfield */
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--deep); color:var(--star); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
     background-image:
-      radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.6) 0%, transparent 100%),
-      radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
-      radial-gradient(1px 1px at 50% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
-      radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.5) 0%, transparent 100%),
-      radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.3) 0%, transparent 100%),
-      radial-gradient(1px 1px at 35% 90%, rgba(255,255,255,0.6) 0%, transparent 100%),
-      radial-gradient(1px 1px at 65% 45%, rgba(255,255,255,0.4) 0%, transparent 100%),
-      radial-gradient(2px 2px at 15% 50%, rgba(79,195,247,0.4) 0%, transparent 100%),
-      radial-gradient(2px 2px at 75% 85%, rgba(124,77,255,0.3) 0%, transparent 100%);
-    pointer-events: none;
-    z-index: 0;
+      radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,0.6),transparent),
+      radial-gradient(1px 1px at 80% 10%,rgba(255,255,255,0.5),transparent),
+      radial-gradient(1px 1px at 50% 70%,rgba(255,255,255,0.4),transparent),
+      radial-gradient(1px 1px at 10% 80%,rgba(255,255,255,0.5),transparent),
+      radial-gradient(1px 1px at 90% 60%,rgba(255,255,255,0.3),transparent),
+      radial-gradient(1px 1px at 35% 90%,rgba(255,255,255,0.6),transparent),
+      radial-gradient(1px 1px at 65% 45%,rgba(255,255,255,0.4),transparent),
+      radial-gradient(2px 2px at 15% 50%,rgba(79,195,247,0.4),transparent),
+      radial-gradient(2px 2px at 75% 85%,rgba(124,77,255,0.3),transparent);
   }
+  #app { position:relative; z-index:1; max-width:820px; margin:0 auto; padding:30px 20px 60px; }
+  header { text-align:center; margin-bottom:40px; }
+  .logo { font-family:'Orbitron',monospace; font-size:clamp(1.8rem,5vw,2.8rem); font-weight:900; background:linear-gradient(135deg,var(--glow),var(--glow2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; letter-spacing:0.05em; margin-bottom:6px; }
+  .tagline { color:var(--muted); font-size:0.9rem; letter-spacing:0.1em; text-transform:uppercase; }
 
-  #app {
-    position: relative;
-    z-index: 1;
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 30px 20px 60px;
+  /* Steps */
+  .steps { display:flex; align-items:center; justify-content:center; margin-bottom:44px; }
+  .step-dot { width:36px; height:36px; border-radius:50%; border:2px solid var(--muted); display:flex; align-items:center; justify-content:center; font-family:'Orbitron',monospace; font-size:0.75rem; font-weight:700; color:var(--muted); transition:all 0.3s; position:relative; }
+  .step-dot.active { border-color:var(--glow); color:var(--glow); box-shadow:0 0 16px rgba(79,195,247,0.4); }
+  .step-dot.done { border-color:var(--green); background:rgba(0,230,118,0.1); color:var(--green); }
+  .step-label { position:absolute; top:44px; left:50%; transform:translateX(-50%); font-size:0.62rem; white-space:nowrap; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
+  .step-dot.active .step-label { color:var(--glow); }
+  .step-line { width:60px; height:2px; background:var(--border); transition:background 0.3s; }
+  .step-line.done { background:var(--green); }
+
+  /* Card */
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; backdrop-filter:blur(8px); }
+  .card-title { font-family:'Orbitron',monospace; font-size:0.82rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--glow); margin-bottom:16px; }
+
+  /* Inputs */
+  textarea, input[type=text], input[type=password] {
+    width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--border);
+    border-radius:10px; color:var(--star); font-family:'DM Sans',sans-serif;
+    font-size:0.9rem; padding:12px 16px; outline:none; transition:border-color 0.2s;
   }
-
-  header {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-
-  .logo {
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(1.8rem, 5vw, 2.8rem);
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--glow), var(--glow2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 0.05em;
-    margin-bottom: 6px;
-  }
-
-  .tagline {
-    color: var(--muted);
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  /* Step indicator */
-  .steps {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    margin-bottom: 36px;
-  }
-
-  .step-dot {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 2px solid var(--muted);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Orbitron', monospace;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--muted);
-    transition: all 0.3s ease;
-    position: relative;
-  }
-
-  .step-dot.active {
-    border-color: var(--glow);
-    color: var(--glow);
-    box-shadow: 0 0 16px rgba(79,195,247,0.4);
-  }
-
-  .step-dot.done {
-    border-color: var(--green);
-    background: rgba(0,230,118,0.1);
-    color: var(--green);
-  }
-
-  .step-label {
-    position: absolute;
-    top: 44px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.65rem;
-    white-space: nowrap;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .step-dot.active .step-label { color: var(--glow); }
-
-  .step-line {
-    width: 60px;
-    height: 2px;
-    background: var(--border);
-    transition: background 0.3s;
-  }
-  .step-line.done { background: var(--green); }
-
-  /* Cards */
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 20px;
-    backdrop-filter: blur(8px);
-  }
-
-  .card h2 {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--glow);
-    margin-bottom: 16px;
-  }
-
-  /* Script input */
-  textarea {
-    width: 100%;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--star);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    padding: 16px;
-    resize: vertical;
-    min-height: 220px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  textarea:focus { border-color: var(--glow); }
-  textarea::placeholder { color: var(--muted); }
-
-  .hint {
-    font-size: 0.78rem;
-    color: var(--muted);
-    margin-top: 10px;
-    line-height: 1.5;
-  }
-
-  .hint code {
-    background: rgba(79,195,247,0.1);
-    color: var(--glow);
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 0.82em;
-  }
+  textarea { line-height:1.6; resize:vertical; min-height:220px; }
+  textarea:focus, input[type=text]:focus, input[type=password]:focus { border-color:var(--glow); }
+  textarea::placeholder, input::placeholder { color:var(--muted); }
 
   /* Buttons */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    border-radius: 50px;
-    border: none;
-    cursor: pointer;
-    font-family: 'Orbitron', monospace;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-  }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 24px; border-radius:50px; border:none; cursor:pointer; font-family:'Orbitron',monospace; font-size:0.75rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; transition:all 0.2s; white-space:nowrap; }
+  .btn:disabled { opacity:0.4; cursor:not-allowed; }
+  .btn-primary { background:linear-gradient(135deg,var(--glow),var(--glow2)); color:white; box-shadow:0 4px 20px rgba(79,195,247,0.3); }
+  .btn-primary:not(:disabled):hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(79,195,247,0.45); }
+  .btn-ghost { background:transparent; color:var(--muted); border:1px solid var(--border); }
+  .btn-ghost:hover { color:var(--star); border-color:var(--muted); }
+  .btn-record { background:radial-gradient(circle,#ff6b6b,var(--red)); color:white; box-shadow:0 4px 24px rgba(255,69,105,0.4); font-size:0.85rem; padding:16px 36px; }
+  .btn-record:hover { transform:scale(1.04); }
+  .btn-record.recording { animation:pulse-rec 1.2s ease-in-out infinite; }
+  @keyframes pulse-rec { 0%,100%{box-shadow:0 4px 24px rgba(255,69,105,0.4)} 50%{box-shadow:0 4px 40px rgba(255,69,105,0.8);transform:scale(1.02)} }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
-  .btn-primary {
-    background: linear-gradient(135deg, var(--glow), var(--glow2));
-    color: white;
-    box-shadow: 0 4px 20px rgba(79,195,247,0.3);
-  }
+  /* Speaker rows */
+  .speaker-row { display:flex; align-items:center; gap:10px; padding:12px 16px; background:rgba(0,0,0,0.2); border-radius:10px; border:1px solid transparent; flex-wrap:wrap; transition:border-color 0.2s; }
+  .speaker-row.is-me { border-color:rgba(79,195,247,0.3); background:rgba(79,195,247,0.05); }
+  .speaker-name { font-family:'Orbitron',monospace; font-size:0.78rem; font-weight:700; min-width:110px; letter-spacing:0.05em; }
+  .type-btn { padding:5px 12px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--muted); font-size:0.72rem; cursor:pointer; transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+  .type-btn.sel-me { border-color:var(--glow); background:rgba(79,195,247,0.15); color:var(--glow); }
+  .type-btn.sel-tts { border-color:var(--glow2); background:rgba(124,77,255,0.15); color:#b39ddb; }
+  .voice-select { padding:5px 10px; background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:8px; color:var(--star); font-size:0.78rem; outline:none; cursor:pointer; max-width:180px; }
 
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(79,195,247,0.45);
-  }
+  /* Progress */
+  .prog-wrap { background:rgba(0,0,0,0.3); border-radius:4px; height:4px; margin-bottom:24px; overflow:hidden; }
+  .prog-fill { height:100%; background:linear-gradient(90deg,var(--glow),var(--glow2)); border-radius:4px; transition:width 0.4s; }
 
-  .btn-primary:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    transform: none;
-  }
+  /* Current line */
+  .current-line { font-size:clamp(1.1rem,3vw,1.4rem); line-height:1.65; color:var(--star); padding:24px; background:rgba(0,0,0,0.25); border-radius:12px; border-left:3px solid var(--glow); margin-bottom:20px; min-height:90px; display:flex; align-items:center; }
+  .current-line.tts { border-left-color:var(--glow2); opacity:0.85; }
 
-  .btn-danger {
-    background: rgba(255,69,105,0.15);
-    color: var(--red);
-    border: 1px solid rgba(255,69,105,0.3);
-  }
-  .btn-danger:hover { background: rgba(255,69,105,0.25); }
+  /* TTS playing */
+  .tts-indicator { display:none; align-items:center; justify-content:center; gap:8px; color:#b39ddb; font-size:0.85rem; padding:12px 0 16px; }
+  .tts-indicator.visible { display:flex; }
+  .wave-bars { display:flex; align-items:flex-end; gap:3px; height:20px; }
+  .wave-bar { width:3px; background:#b39ddb; border-radius:2px; animation:wave 0.8s ease-in-out infinite; }
+  .wave-bar:nth-child(2){animation-delay:0.1s} .wave-bar:nth-child(3){animation-delay:0.2s} .wave-bar:nth-child(4){animation-delay:0.3s}
+  @keyframes wave { 0%,100%{height:4px} 50%{height:18px} }
 
-  .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-  }
-  .btn-ghost:hover { color: var(--star); border-color: var(--muted); }
+  /* Upcoming */
+  .upcoming-line { padding:10px 14px; border-left:2px solid var(--border); margin-bottom:8px; opacity:0.4; }
+  .up-speaker { font-family:'Orbitron',monospace; font-size:0.65rem; color:var(--muted); margin-bottom:2px; }
+  .up-text { font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-  .btn-record {
-    background: radial-gradient(circle, #ff6b6b, var(--red));
-    color: white;
-    box-shadow: 0 4px 24px rgba(255,69,105,0.4);
-    font-size: 0.85rem;
-    padding: 16px 36px;
-  }
+  /* Rec controls */
+  .rec-controls { display:flex; align-items:center; justify-content:center; gap:12px; margin-top:20px; flex-wrap:wrap; }
+  .rec-timer { font-family:'Orbitron',monospace; font-size:1.2rem; color:var(--red); letter-spacing:0.1em; min-width:60px; text-align:center; }
 
-  .btn-record:hover {
-    transform: scale(1.04);
-    box-shadow: 0 6px 32px rgba(255,69,105,0.6);
-  }
+  /* Char counter */
+  .char-counter { display:flex; align-items:center; gap:10px; padding:10px 16px; background:rgba(0,0,0,0.2); border-radius:10px; font-size:0.78rem; margin-bottom:16px; }
+  .char-bar-wrap { flex:1; background:rgba(0,0,0,0.3); border-radius:4px; height:6px; overflow:hidden; }
+  .char-bar { height:100%; border-radius:4px; transition:width 0.4s, background 0.4s; }
 
-  .btn-record.recording {
-    animation: pulse-rec 1.2s ease-in-out infinite;
-  }
+  /* Alert boxes */
+  .alert { padding:12px 16px; border-radius:8px; font-size:0.83rem; margin-top:12px; line-height:1.5; }
+  .alert-warn { background:rgba(255,213,79,0.08); border:1px solid rgba(255,213,79,0.2); color:var(--gold); }
+  .alert-info { background:rgba(79,195,247,0.08); border:1px solid rgba(79,195,247,0.2); color:var(--glow); }
+  .alert-err { background:rgba(255,69,105,0.08); border:1px solid rgba(255,69,105,0.2); color:var(--red); }
 
-  @keyframes pulse-rec {
-    0%, 100% { box-shadow: 0 4px 24px rgba(255,69,105,0.4); }
-    50% { box-shadow: 0 4px 40px rgba(255,69,105,0.8); transform: scale(1.02); }
-  }
+  .hint { font-size:0.78rem; color:var(--muted); margin-top:10px; line-height:1.5; }
+  .hint code { background:rgba(79,195,247,0.1); color:var(--glow); padding:1px 6px; border-radius:4px; }
+  .divider { height:1px; background:var(--border); margin:24px 0; }
+  .center { text-align:center; }
+  .row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
 
-  /* Character setup */
-  .speaker-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
+  .api-key-wrap { position:relative; }
+  .api-key-wrap input { padding-right:44px; }
+  .eye-btn { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem; padding:4px; }
 
-  .speaker-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 10px;
-    border: 1px solid transparent;
-    transition: border-color 0.2s;
-  }
-
-  .speaker-row.is-player {
-    border-color: rgba(79,195,247,0.3);
-    background: rgba(79,195,247,0.05);
-  }
-
-  .speaker-name {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    min-width: 140px;
-  }
-
-  .speaker-type-btns {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .type-btn {
-    padding: 5px 12px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    font-size: 0.72rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .type-btn:hover { border-color: var(--muted); color: var(--star); }
-  .type-btn.selected-me { border-color: var(--glow); background: rgba(79,195,247,0.15); color: var(--glow); }
-  .type-btn.selected-tts { border-color: var(--glow2); background: rgba(124,77,255,0.15); color: #b39ddb; }
-
-  /* Voice selector */
-  .voice-select {
-    padding: 5px 10px;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--star);
-    font-size: 0.8rem;
-    outline: none;
-    cursor: pointer;
-    max-width: 160px;
-  }
-
-  .pitch-wrap {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-left: auto;
-  }
-
-  .pitch-label {
-    font-size: 0.7rem;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  .pitch-value {
-    font-size: 0.7rem;
-    color: #b39ddb;
-    min-width: 28px;
-    text-align: right;
-    font-family: 'Orbitron', monospace;
-  }
-
-  input[type=range] {
-    -webkit-appearance: none;
-    width: 80px;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--border);
-    outline: none;
-    cursor: pointer;
-  }
-
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #b39ddb;
-    cursor: pointer;
-  }
-
-  /* Recording screen */
-  #recordingScreen { display: none; }
-
-  .progress-bar-wrap {
-    background: rgba(0,0,0,0.3);
-    border-radius: 4px;
-    height: 4px;
-    margin-bottom: 24px;
-    overflow: hidden;
-  }
-
-  .progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--glow), var(--glow2));
-    border-radius: 4px;
-    transition: width 0.4s ease;
-  }
-
-  .line-counter {
-    text-align: center;
-    font-family: 'Orbitron', monospace;
-    font-size: 0.7rem;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    margin-bottom: 20px;
-  }
-
-  /* Current line display */
-  .current-speaker-label {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .speaker-label-me { color: var(--glow); }
-  .speaker-label-tts { color: #b39ddb; }
-
-  .current-line-text {
-    font-size: clamp(1.1rem, 3vw, 1.4rem);
-    line-height: 1.65;
-    color: var(--star);
-    padding: 24px;
-    background: rgba(0,0,0,0.25);
-    border-radius: 12px;
-    border-left: 3px solid var(--glow);
-    margin-bottom: 20px;
-    min-height: 90px;
-    display: flex;
-    align-items: center;
-  }
-
-  .current-line-text.tts-line {
-    border-left-color: var(--glow2);
-    opacity: 0.85;
-  }
-
-  /* Upcoming lines */
-  .upcoming-label {
-    font-size: 0.72rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 10px;
-  }
-
-  .upcoming-line {
-    padding: 10px 14px;
-    border-radius: 8px;
-    border-left: 2px solid var(--border);
-    margin-bottom: 8px;
-    opacity: 0.45;
-    transition: opacity 0.3s;
-  }
-
-  .upcoming-line .up-speaker {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.65rem;
-    color: var(--muted);
-    margin-bottom: 2px;
-    letter-spacing: 0.08em;
-  }
-
-  .upcoming-line .up-text {
-    font-size: 0.85rem;
-    color: var(--star);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .rec-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 24px;
-    flex-wrap: wrap;
-  }
-
-  .rec-timer {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.2rem;
-    color: var(--red);
-    letter-spacing: 0.1em;
-    min-width: 60px;
-    text-align: center;
-  }
-
-  /* TTS playing indicator */
-  .tts-playing {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    color: #b39ddb;
-    font-size: 0.85rem;
-    padding: 16px;
-  }
-
-  .tts-playing.visible { display: flex; }
-
-  .wave-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 3px;
-    height: 20px;
-  }
-
-  .wave-bar {
-    width: 3px;
-    background: #b39ddb;
-    border-radius: 2px;
-    animation: wave 0.8s ease-in-out infinite;
-  }
-
-  .wave-bar:nth-child(2) { animation-delay: 0.1s; }
-  .wave-bar:nth-child(3) { animation-delay: 0.2s; }
-  .wave-bar:nth-child(4) { animation-delay: 0.3s; }
-
-  @keyframes wave {
-    0%, 100% { height: 4px; }
-    50% { height: 18px; }
-  }
-
-  /* Finish screen */
-  #finishScreen {
-    display: none;
-    text-align: center;
-    padding: 40px 20px;
-  }
-
-  .finish-icon {
-    font-size: 4rem;
-    margin-bottom: 16px;
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-
-  .finish-title {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.6rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--glow), var(--glow2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 10px;
-  }
-
-  .finish-sub {
-    color: var(--muted);
-    margin-bottom: 30px;
-    line-height: 1.6;
-  }
-
-  /* Alert */
-  .alert {
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-size: 0.83rem;
-    margin-top: 12px;
-  }
-
-  .alert-warn {
-    background: rgba(255,213,79,0.08);
-    border: 1px solid rgba(255,213,79,0.2);
-    color: var(--gold);
-  }
-
-  .alert-info {
-    background: rgba(79,195,247,0.08);
-    border: 1px solid rgba(79,195,247,0.2);
-    color: var(--glow);
-  }
-
-  /* Segment log */
-  .segments-log {
-    max-height: 200px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 12px;
-  }
-
-  .seg-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 8px;
-    font-size: 0.8rem;
-  }
-
-  .seg-item .seg-speaker {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.68rem;
-    color: var(--muted);
-    min-width: 100px;
-  }
-
-  .seg-item .seg-text {
-    flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--star);
-    opacity: 0.7;
-  }
-
-  .seg-item .seg-status {
-    font-size: 0.7rem;
-    padding: 2px 8px;
-    border-radius: 10px;
-  }
-
-  .seg-done { background: rgba(0,230,118,0.1); color: var(--green); }
-  .seg-pending { background: rgba(90,106,138,0.2); color: var(--muted); }
-
-  .section-divider {
-    height: 1px;
-    background: var(--border);
-    margin: 24px 0;
-  }
-
-  @media (max-width: 500px) {
-    .speaker-row { flex-direction: column; align-items: flex-start; }
-    .voice-select { margin-left: 0; }
-    .rec-controls { gap: 8px; }
+  @media(max-width:500px){
+    .speaker-row{flex-direction:column;align-items:flex-start;}
+    .voice-select{max-width:100%;}
   }
 </style>
 </head>
 <body>
 <div id="app">
-
   <header>
-    <div class="logo">🚀 PODCAST STUDIO</div>
-    <div class="tagline">Record your space exploration podcast</div>
+    <div class="logo">🚀 Podcast Studio</div>
+    <div class="tagline">Space Exploration Podcast Recorder</div>
   </header>
 
-  <!-- Step Indicators -->
-  <div class="steps">
+  <!-- Steps -->
+  <div class="steps" id="stepsBar">
     <div class="step-dot active" id="dot1">1<span class="step-label">Script</span></div>
     <div class="step-line" id="line1"></div>
     <div class="step-dot" id="dot2">2<span class="step-label">Voices</span></div>
@@ -653,43 +148,60 @@
     <div class="step-dot" id="dot4">4<span class="step-label">Done!</span></div>
   </div>
 
-  <!-- STEP 1: Script input -->
+  <!-- STEP 1: Script + API key -->
   <div id="step1">
     <div class="card">
-      <h2>📄 Paste Your Script</h2>
-      <textarea id="scriptInput" placeholder="Paste your script here. Each line should start with the speaker's name followed by a colon:
-
-HOST: Welcome to Space Explorers, the podcast where we talk about the final frontier!
-CO-HOST: I'm so excited for today's episode. We've got a brilliant guest joining us!
-HOST: That's right! Today we're talking to Alex, who has some amazing thoughts about Mars.
-ALEX: Hi! Yes, I think we should absolutely go to Mars because...
-
-Each new line = a new speaking turn."></textarea>
-      <p class="hint">
-        💡 Format each line as <code>SPEAKER NAME: What they say</code><br>
-        You can copy directly from Google Docs and paste here. Each line is one speaking turn.
+      <div class="card-title">🔑 ElevenLabs API Key</div>
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:12px;line-height:1.5;">
+        Enter your ElevenLabs API key. It stays on your device and is only sent to ElevenLabs.
+        Get one free at <strong style="color:var(--glow)">elevenlabs.io</strong>.
       </p>
+      <div class="api-key-wrap">
+        <input type="password" id="apiKeyInput" placeholder="sk_xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off"/>
+        <button class="eye-btn" onclick="toggleKeyVis()" title="Show/hide key">👁</button>
+      </div>
+      <div id="apiKeyStatus"></div>
     </div>
 
-    <div style="text-align:center; margin-top: 8px;">
-      <button class="btn btn-primary" onclick="parseScript()">
-        Parse Script →
-      </button>
+    <div class="card">
+      <div class="card-title">📄 Paste Your Script</div>
+      <textarea id="scriptInput" placeholder="Paste your script here. Each line must start with the speaker name:
+
+HOST: Welcome to Space Explorers, the podcast about the final frontier!
+CO-HOST: I'm so excited for today's episode!
+HOST: Today we're talking to Alex about Mars.
+ALEX: Hi! I think we should definitely go to Mars because...
+
+Each new line = one speaking turn."></textarea>
+      <p class="hint">💡 Format each line as <code>SPEAKER NAME: What they say</code>. You can paste directly from Google Docs.</p>
+      <div id="charCounterWrap" style="display:none;margin-top:14px;">
+        <div class="char-counter">
+          <span style="color:var(--muted);white-space:nowrap">AI chars:</span>
+          <div class="char-bar-wrap"><div class="char-bar" id="charBar" style="width:0%;background:var(--green)"></div></div>
+          <span id="charCount" style="font-family:'Orbitron',monospace;font-size:0.72rem;white-space:nowrap;color:var(--green)">0 / 10,000</span>
+        </div>
+      </div>
+      <div id="parseError" class="alert alert-err" style="display:none;"></div>
+    </div>
+
+    <div class="row">
+      <button class="btn btn-primary" onclick="parseAndProceed()">Parse Script →</button>
     </div>
   </div>
 
   <!-- STEP 2: Assign voices -->
   <div id="step2" style="display:none;">
     <div class="card">
-      <h2>🎙️ Assign Voices</h2>
-      <p style="font-size:0.85rem; color:var(--muted); margin-bottom:16px; line-height:1.5;">
-        Choose <strong style="color:var(--glow)">That's me! 🎙️</strong> for your daughter's parts (live microphone recording) and <strong style="color:#b39ddb">AI Voice 🤖</strong> for everyone else. Use the <strong style="color:#b39ddb">🎵 Pitch</strong> slider to make each AI voice sound more child-like — higher values sound younger!
+      <div class="card-title">🎙️ Assign Voices</div>
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:16px;line-height:1.5;">
+        Choose <strong style="color:var(--glow)">That's me! 🎙️</strong> for your own parts (live mic recording)
+        and <strong style="color:#b39ddb">AI Voice 🤖</strong> for everyone else (ElevenLabs TTS).
+        Pick a voice for each AI character from the dropdown.
       </p>
-      <div class="speaker-list" id="speakerList"></div>
-      <div class="alert alert-info" id="voiceAlert" style="display:none;"></div>
+      <div id="speakerList" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;"></div>
+      <div id="voiceAlert" class="alert alert-warn" style="display:none;"></div>
     </div>
-
-    <div style="display:flex; gap:10px; justify-content:center; margin-top:8px; flex-wrap:wrap;">
+    <div class="row">
       <button class="btn btn-ghost" onclick="goToStep(1)">← Back</button>
       <button class="btn btn-primary" onclick="startRecording()">Start Recording →</button>
     </div>
@@ -698,328 +210,346 @@ Each new line = a new speaking turn."></textarea>
   <!-- STEP 3: Recording -->
   <div id="step3" style="display:none;">
     <div class="card">
-      <div class="progress-bar-wrap">
-        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
-      </div>
-      <div class="line-counter" id="lineCounter">Line 1 of —</div>
+      <div class="prog-wrap"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+      <div style="text-align:center;font-family:'Orbitron',monospace;font-size:0.7rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:20px;" id="lineCounter">Line 1 of —</div>
 
-      <div id="currentSpeakerLabel" class="current-speaker-label speaker-label-me" style="margin-bottom:8px;"></div>
-      <div id="currentLineText" class="current-line-text"></div>
+      <div id="curSpeakerLabel" style="font-family:'Orbitron',monospace;font-size:0.7rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--glow);margin-bottom:8px;"></div>
+      <div id="curLineText" class="current-line"></div>
 
-      <!-- TTS playing indicator -->
-      <div class="tts-playing" id="ttsIndicator">
+      <div class="tts-indicator" id="ttsIndicator">
         <div class="wave-bars">
-          <div class="wave-bar" style="height:6px"></div>
-          <div class="wave-bar" style="height:14px"></div>
-          <div class="wave-bar" style="height:10px"></div>
-          <div class="wave-bar" style="height:18px"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div>
         </div>
-        AI voice playing...
+        ElevenLabs voice playing...
       </div>
 
-      <!-- Live recording controls -->
       <div class="rec-controls" id="recControls">
         <button class="btn btn-record" id="recBtn" onclick="toggleRecord()">⏺ Record</button>
         <div class="rec-timer" id="recTimer" style="display:none;">0:00</div>
         <button class="btn btn-ghost" id="retakeBtn" onclick="retakeLine()" style="display:none;">↩ Retake</button>
       </div>
 
-      <!-- Upcoming lines preview -->
-      <div class="section-divider"></div>
-      <div class="upcoming-label">Upcoming lines</div>
+      <div class="divider"></div>
+      <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Upcoming</div>
       <div id="upcomingLines"></div>
     </div>
   </div>
 
-  <!-- STEP 4: Finish -->
+  <!-- STEP 4: Done -->
   <div id="step4" style="display:none;">
-    <div class="card" style="text-align:center; padding: 48px 28px;">
-      <div class="finish-icon">🚀</div>
-      <div class="finish-title">Mission Complete!</div>
-      <p class="finish-sub">Your podcast has been recorded.<br>Click below to download the audio file.</p>
-      <button class="btn btn-primary" id="downloadBtn" onclick="downloadPodcast()" style="font-size:0.9rem; padding:14px 32px;">
-        ⬇️ Download Podcast
-      </button>
-      <p style="font-size:0.75rem; color:var(--muted); margin-top:16px;">Format: WAV audio file</p>
-      <div class="section-divider"></div>
-      <button class="btn btn-ghost" onclick="resetApp()">🔄 Start New Recording</button>
+    <div class="card center" style="padding:48px 28px;">
+      <div style="font-size:4rem;margin-bottom:16px;display:inline-block;animation:float 3s ease-in-out infinite;">🚀</div>
+      <div style="font-family:'Orbitron',monospace;font-size:clamp(1.3rem,4vw,1.8rem);font-weight:900;background:linear-gradient(135deg,var(--glow),var(--glow2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;">Mission Complete!</div>
+      <p style="color:var(--muted);margin-bottom:28px;line-height:1.6;">Your podcast has been recorded.<br>Click below to download the finished audio.</p>
+      <button class="btn btn-primary" id="downloadBtn" onclick="downloadPodcast()" style="font-size:0.9rem;padding:14px 32px;">⬇️ Download Podcast</button>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:14px;">Format: WAV audio file</p>
+      <div class="divider"></div>
+      <button class="btn btn-ghost" onclick="resetApp()">🔄 Record Another Episode</button>
     </div>
   </div>
-
 </div>
 
 <script>
 // ─── STATE ───────────────────────────────────────────────────────────────────
-let scriptLines = [];       // [{speaker, text}]
-let speakers = {};          // {name: {type: 'me'|'tts', voice: SpeechSynthesisVoice}}
+let scriptLines = [];
+let speakers = {};
+let elevenVoices = [];
 let currentLine = 0;
-let recordedSegments = [];  // ArrayBuffer per line (in order)
+let recordedSegments = [];
 let mediaRecorder = null;
 let recordingChunks = [];
 let recTimerInterval = null;
 let recStartTime = 0;
-let availableVoices = [];
+const FREE_TIER_LIMIT = 10000;
 
-// ─── VOICE LOADING ────────────────────────────────────────────────────────────
-function loadVoices() {
-  availableVoices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
-  if (availableVoices.length === 0) {
-    window.speechSynthesis.onvoiceschanged = () => {
-      availableVoices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
-    };
-  }
+function getApiKey() { return document.getElementById('apiKeyInput').value.trim(); }
+
+function toggleKeyVis() {
+  const inp = document.getElementById('apiKeyInput');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
 }
-loadVoices();
 
-// ─── STEP 1: PARSE SCRIPT ────────────────────────────────────────────────────
-function parseScript() {
+// ─── CHAR COUNTER ─────────────────────────────────────────────────────────────
+function updateCharCounter(lines, spks) {
+  const ttsChars = lines
+    .filter(l => spks[l.speaker]?.type === 'tts')
+    .reduce((sum, l) => sum + l.text.length, 0);
+  const pct = Math.min(100, (ttsChars / FREE_TIER_LIMIT) * 100);
+  const bar = document.getElementById('charBar');
+  const label = document.getElementById('charCount');
+  bar.style.width = pct + '%';
+  bar.style.background = pct > 90 ? '#ff4569' : pct > 70 ? '#ffd54f' : '#00e676';
+  label.style.color = pct > 90 ? '#ff4569' : pct > 70 ? '#ffd54f' : '#00e676';
+  label.textContent = `${ttsChars.toLocaleString()} / ${FREE_TIER_LIMIT.toLocaleString()}`;
+  document.getElementById('charCounterWrap').style.display = 'block';
+}
+
+// ─── STEP 1: PARSE ────────────────────────────────────────────────────────────
+async function parseAndProceed() {
+  document.getElementById('parseError').style.display = 'none';
   const raw = document.getElementById('scriptInput').value.trim();
-  if (!raw) { alert('Please paste your script first!'); return; }
+  if (!raw) { showParseError('Please paste your script first.'); return; }
 
-  const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
   scriptLines = [];
   const spkSet = new Set();
-
   for (const line of lines) {
-    const colonIdx = line.indexOf(':');
-    if (colonIdx < 1) continue;
-    const spk = line.substring(0, colonIdx).trim().toUpperCase();
-    const text = line.substring(colonIdx + 1).trim();
-    if (!spk || !text) continue;
-    scriptLines.push({ speaker: spk, text });
-    spkSet.add(spk);
+    const ci = line.indexOf(':');
+    if (ci < 1) continue;
+    const spk = line.substring(0, ci).trim().toUpperCase();
+    const text = line.substring(ci + 1).trim();
+    if (spk && text) { scriptLines.push({ speaker: spk, text }); spkSet.add(spk); }
   }
+  if (!scriptLines.length) { showParseError('No lines found. Make sure each line is formatted as SPEAKER: Text'); return; }
 
-  if (scriptLines.length === 0) {
-    alert('Could not find any lines. Make sure each line starts with SPEAKER: Text');
-    return;
-  }
-
-  // Build speakers map
+  // Init speakers (default all to tts)
   speakers = {};
-  for (const spk of spkSet) {
-    speakers[spk] = { type: 'tts', voiceIndex: 0 };
+  [...spkSet].forEach(spk => { speakers[spk] = { type: 'tts', voiceId: '' }; });
+
+  updateCharCounter(scriptLines, speakers);
+
+  // Fetch ElevenLabs voices
+  const key = getApiKey();
+  if (!key) { showParseError('Please enter your ElevenLabs API key above.'); return; }
+
+  const statusEl = document.getElementById('apiKeyStatus');
+  statusEl.className = 'alert alert-info'; statusEl.style.display = 'block';
+  statusEl.textContent = '⏳ Connecting to ElevenLabs and fetching voices...';
+
+  try {
+    const res = await fetch('https://api.elevenlabs.io/v1/voices', {
+      headers: { 'xi-api-key': key }
+    });
+    if (!res.ok) throw new Error(`ElevenLabs error ${res.status}: ${res.statusText}`);
+    const data = await res.json();
+    elevenVoices = data.voices || [];
+    statusEl.className = 'alert alert-info';
+    statusEl.textContent = `✅ Connected! ${elevenVoices.length} voices available.`;
+  } catch (e) {
+    statusEl.className = 'alert alert-err'; statusEl.style.display = 'block';
+    statusEl.textContent = '❌ Could not connect to ElevenLabs. Check your API key and try again. (' + e.message + ')';
+    return;
   }
 
   renderSpeakerAssignment([...spkSet]);
   goToStep(2);
 }
 
+function showParseError(msg) {
+  const el = document.getElementById('parseError');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+// ─── STEP 2: VOICES ───────────────────────────────────────────────────────────
 function renderSpeakerAssignment(spkList) {
   const container = document.getElementById('speakerList');
   container.innerHTML = '';
 
-  // Default pitches: vary each character so they sound distinct
-  const defaultPitches = [1.6, 1.4, 1.8, 1.5, 1.7];
+  // Build voice options — sort to put child/young-sounding ones first
+  const youngKeywords = ['child','young','kid','girl','boy','lily','charlotte','emily','freya','aria'];
+  const sorted = [...elevenVoices].sort((a, b) => {
+    const aY = youngKeywords.some(k => a.name.toLowerCase().includes(k)) ? 0 : 1;
+    const bY = youngKeywords.some(k => b.name.toLowerCase().includes(k)) ? 0 : 1;
+    return aY - bY;
+  });
+
+  const voiceOpts = sorted.map(v =>
+    `<option value="${v.voice_id}">${v.name}${v.labels?.age ? ' · ' + v.labels.age : ''}</option>`
+  ).join('');
 
   spkList.forEach((spk, i) => {
+    // Pre-assign voices cycling through available list
+    if (!speakers[spk].voiceId && sorted.length > 0) {
+      speakers[spk].voiceId = sorted[i % sorted.length].voice_id;
+    }
+
     const row = document.createElement('div');
     row.className = 'speaker-row';
     row.id = `row-${spk}`;
-
-    const defaultPitch = defaultPitches[i % defaultPitches.length];
-    speakers[spk].pitch = defaultPitch;
-    speakers[spk].voiceIndex = i % Math.max(availableVoices.length, 1);
-
     row.innerHTML = `
       <div class="speaker-name">${spk}</div>
-      <div class="speaker-type-btns">
+      <div style="display:flex;gap:6px;">
         <button class="type-btn" onclick="setSpeakerType('${spk}','me',this)">🎙️ That's me!</button>
-        <button class="type-btn selected-tts" onclick="setSpeakerType('${spk}','tts',this)">🤖 AI Voice</button>
+        <button class="type-btn sel-tts" onclick="setSpeakerType('${spk}','tts',this)">🤖 AI Voice</button>
       </div>
-      <div class="pitch-wrap" id="pitchwrap-${spk}">
-        <span class="pitch-label">🎵 Pitch</span>
-        <input type="range" min="0.8" max="2.2" step="0.1" value="${defaultPitch}"
-          oninput="setPitch('${spk}', this.value, this)"
-          title="Higher = more child-like">
-        <span class="pitch-value" id="pitchval-${spk}">${defaultPitch.toFixed(1)}x</span>
-      </div>
+      <select class="voice-select" id="voice-${spk}" onchange="speakers['${spk}'].voiceId=this.value">
+        ${voiceOpts}
+      </select>
     `;
     container.appendChild(row);
+
+    // Set the select to the pre-assigned voice
+    setTimeout(() => {
+      const sel = document.getElementById(`voice-${spk}`);
+      if (sel) sel.value = speakers[spk].voiceId;
+    }, 0);
   });
 }
 
 function setSpeakerType(spk, type, btn) {
   speakers[spk].type = type;
   const row = document.getElementById(`row-${spk}`);
-  row.className = `speaker-row ${type === 'me' ? 'is-player' : ''}`;
-  const btns = row.querySelectorAll('.type-btn');
-  btns.forEach(b => { b.className = 'type-btn'; });
-  btn.className = `type-btn selected-${type}`;
+  row.className = 'speaker-row' + (type === 'me' ? ' is-me' : '');
+  row.querySelectorAll('.type-btn').forEach(b => b.className = 'type-btn');
+  btn.className = `type-btn sel-${type}`;
+  const voiceSel = document.getElementById(`voice-${spk}`);
+  if (voiceSel) voiceSel.style.opacity = type === 'me' ? '0.3' : '1';
 
-  // Hide pitch controls for the live mic speaker
-  const pitchWrap = document.getElementById(`pitchwrap-${spk}`);
-  if (pitchWrap) pitchWrap.style.opacity = type === 'me' ? '0.3' : '1';
-
+  updateCharCounter(scriptLines, speakers);
   const hasMe = Object.values(speakers).some(s => s.type === 'me');
-  const alert = document.getElementById('voiceAlert');
-  if (!hasMe) {
-    alert.style.display = 'block';
-    alert.textContent = "⚠️ Don't forget to mark at least one speaker as 'That's me!'";
-  } else {
-    alert.style.display = 'none';
-  }
+  const alertEl = document.getElementById('voiceAlert');
+  alertEl.style.display = hasMe ? 'none' : 'block';
+  alertEl.textContent = "⚠️ Mark at least one speaker as 'That's me!' first.";
 }
 
-function setPitch(spk, val, input) {
-  speakers[spk].pitch = parseFloat(val);
-  document.getElementById(`pitchval-${spk}`).textContent = parseFloat(val).toFixed(1) + 'x';
-}
-
-// ─── STEP 3: RECORDING ───────────────────────────────────────────────────────
-async function startRecording() {
+// ─── STEP 3: RECORDING ────────────────────────────────────────────────────────
+function startRecording() {
   const hasMe = Object.values(speakers).some(s => s.type === 'me');
   if (!hasMe) {
     document.getElementById('voiceAlert').style.display = 'block';
-    document.getElementById('voiceAlert').textContent = "⚠️ Please mark at least one speaker as 'That's me!' first.";
     return;
   }
-
   currentLine = 0;
   recordedSegments = Array(scriptLines.length).fill(null);
-
   goToStep(3);
   renderCurrentLine();
 }
 
 function renderCurrentLine() {
-  if (currentLine >= scriptLines.length) {
-    finishSession();
-    return;
-  }
+  if (currentLine >= scriptLines.length) { goToStep(4); return; }
 
   const total = scriptLines.length;
-  const pct = Math.round((currentLine / total) * 100);
-  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progFill').style.width = Math.round((currentLine / total) * 100) + '%';
   document.getElementById('lineCounter').textContent = `Line ${currentLine + 1} of ${total}`;
 
   const { speaker, text } = scriptLines[currentLine];
   const isMe = speakers[speaker]?.type === 'me';
 
-  const labelEl = document.getElementById('currentSpeakerLabel');
-  const textEl = document.getElementById('currentLineText');
+  const labelEl = document.getElementById('curSpeakerLabel');
+  const textEl = document.getElementById('curLineText');
   labelEl.textContent = speaker;
-  labelEl.className = `current-speaker-label ${isMe ? 'speaker-label-me' : 'speaker-label-tts'}`;
+  labelEl.style.color = isMe ? 'var(--glow)' : '#b39ddb';
   textEl.textContent = text;
-  textEl.className = `current-line-text ${isMe ? '' : 'tts-line'}`;
+  textEl.className = 'current-line' + (isMe ? '' : ' tts');
 
   // Upcoming
   const upEl = document.getElementById('upcomingLines');
   upEl.innerHTML = '';
   for (let i = currentLine + 1; i < Math.min(currentLine + 4, total); i++) {
     const l = scriptLines[i];
-    const div = document.createElement('div');
-    div.className = 'upcoming-line';
-    div.innerHTML = `<div class="up-speaker">${l.speaker}</div><div class="up-text">${l.text}</div>`;
-    upEl.appendChild(div);
+    const d = document.createElement('div');
+    d.className = 'upcoming-line';
+    d.innerHTML = `<div class="up-speaker">${l.speaker}</div><div class="up-text">${l.text}</div>`;
+    upEl.appendChild(d);
   }
 
   const recControls = document.getElementById('recControls');
-  const ttsIndicator = document.getElementById('ttsIndicator');
+  const ttsInd = document.getElementById('ttsIndicator');
 
   if (isMe) {
     recControls.style.display = 'flex';
-    ttsIndicator.className = 'tts-playing';
+    ttsInd.className = 'tts-indicator';
     document.getElementById('retakeBtn').style.display = 'none';
     document.getElementById('recTimer').style.display = 'none';
     document.getElementById('recBtn').textContent = '⏺ Record';
     document.getElementById('recBtn').className = 'btn btn-record';
   } else {
     recControls.style.display = 'none';
-    ttsIndicator.className = 'tts-playing visible';
-    playTTS(text, speaker, () => {
-      ttsIndicator.className = 'tts-playing';
+    ttsInd.className = 'tts-indicator visible';
+    playElevenLabs(text, speaker, () => {
+      ttsInd.className = 'tts-indicator';
       currentLine++;
       renderCurrentLine();
     });
   }
 }
 
-// Pitch-shifted TTS using AudioContext + MediaStreamDestination to capture & re-pitch
-// Strategy: speak into an OfflineAudioContext via MediaRecorder capture, then replay pitched
-// Simpler reliable approach: use SpeechSynthesis pitch parameter (limited but universal)
-// + AudioContext playbackRate on re-recorded audio for the download
+// ─── ELEVENLABS TTS ──────────────────────────────────────────────────────────
+async function playElevenLabs(text, speaker, onDone) {
+  const key = getApiKey();
+  const voiceId = speakers[speaker]?.voiceId;
+  if (!key || !voiceId) { onDone(); return; }
 
-function playTTS(text, speaker, onDone) {
-  window.speechSynthesis.cancel();
-  const spkConfig = speakers[speaker] || {};
-  const pitchMult = spkConfig.pitch || 1.6;
+  try {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: { 'xi-api-key': key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.4, similarity_boost: 0.8, style: 0.3, use_speaker_boost: true }
+      })
+    });
+    if (!res.ok) throw new Error('ElevenLabs TTS failed: ' + res.status);
 
-  const utter = new SpeechSynthesisUtterance(text);
+    const arrayBuffer = await res.arrayBuffer();
+    // Store the raw audio for later download
+    recordedSegments[currentLine] = { type: 'tts', audioData: arrayBuffer };
 
-  // Pick a voice - prefer female voices for child effect when pitch > 1.4
-  if (availableVoices.length > 0) {
-    const voiceIdx = spkConfig.voiceIndex || 0;
-    utter.voice = availableVoices[voiceIdx % availableVoices.length];
+    // Play it
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const decoded = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
+    const source = audioCtx.createBufferSource();
+    source.buffer = decoded;
+    source.connect(audioCtx.destination);
+    source.onended = () => { audioCtx.close(); onDone(); };
+    source.start();
+  } catch (e) {
+    console.error('ElevenLabs error:', e);
+    // Fall back to browser TTS so recording isn't blocked
+    recordedSegments[currentLine] = { type: 'tts-fallback', text };
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.pitch = 1.6; utter.rate = 1.0;
+    utter.onend = onDone; utter.onerror = onDone;
+    window.speechSynthesis.speak(utter);
   }
-
-  // SpeechSynthesis pitch: 0-2, normal=1. We map our 0.8-2.2 range into 0-2
-  utter.pitch = Math.min(2, pitchMult);
-  // Slightly faster speech = more child-like energy
-  utter.rate = 0.9 + (pitchMult - 1) * 0.15;
-
-  // Store TTS segment with pitch info for download reconstruction
-  recordedSegments[currentLine] = { type: 'tts', text, speaker, pitch: pitchMult };
-
-  utter.onend = onDone;
-  utter.onerror = onDone;
-  window.speechSynthesis.speak(utter);
 }
 
-// ─── MICROPHONE RECORDING ─────────────────────────────────────────────────────
+// ─── MICROPHONE ───────────────────────────────────────────────────────────────
 async function toggleRecord() {
   if (mediaRecorder && mediaRecorder.state === 'recording') {
-    stopRecording();
+    stopMic();
   } else {
-    await beginRecording();
+    await startMic();
   }
 }
 
-async function beginRecording() {
+async function startMic() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     recordingChunks = [];
     mediaRecorder = new MediaRecorder(stream);
     mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordingChunks.push(e.data); };
-    mediaRecorder.onstop = handleRecordingStop;
+    mediaRecorder.onstop = handleMicStop;
     mediaRecorder.start();
-
     document.getElementById('recBtn').textContent = '⏹ Stop Recording';
     document.getElementById('recBtn').className = 'btn btn-record recording';
     document.getElementById('recTimer').style.display = 'block';
     recStartTime = Date.now();
     recTimerInterval = setInterval(updateTimer, 500);
-  } catch (e) {
-    alert('Microphone access denied. Please allow microphone access in your browser settings.');
+  } catch {
+    alert('Microphone access denied. Please allow microphone access in Chrome settings and reload.');
   }
 }
 
-function stopRecording() {
-  if (mediaRecorder) {
-    mediaRecorder.stop();
-    mediaRecorder.stream.getTracks().forEach(t => t.stop());
-  }
+function stopMic() {
+  if (mediaRecorder) { mediaRecorder.stop(); mediaRecorder.stream.getTracks().forEach(t => t.stop()); }
   clearInterval(recTimerInterval);
   document.getElementById('recBtn').textContent = '⏺ Record';
   document.getElementById('recBtn').className = 'btn btn-record';
   document.getElementById('recTimer').style.display = 'none';
 }
 
-function handleRecordingStop() {
+function handleMicStop() {
   const blob = new Blob(recordingChunks, { type: 'audio/webm' });
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    recordedSegments[currentLine] = { type: 'mic', data: reader.result, blob };
-    document.getElementById('retakeBtn').style.display = 'inline-flex';
-
-    // Auto-advance
-    setTimeout(() => {
-      document.getElementById('retakeBtn').style.display = 'none';
-      currentLine++;
-      renderCurrentLine();
-    }, 800);
-  };
-  reader.readAsDataURL(blob);
+  recordedSegments[currentLine] = { type: 'mic', blob };
+  document.getElementById('retakeBtn').style.display = 'inline-flex';
+  setTimeout(() => {
+    document.getElementById('retakeBtn').style.display = 'none';
+    currentLine++;
+    renderCurrentLine();
+  }, 800);
 }
 
 function retakeLine() {
@@ -1029,159 +559,96 @@ function retakeLine() {
 }
 
 function updateTimer() {
-  const elapsed = Math.floor((Date.now() - recStartTime) / 1000);
-  const m = Math.floor(elapsed / 60);
-  const s = elapsed % 60;
-  document.getElementById('recTimer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  const e = Math.floor((Date.now() - recStartTime) / 1000);
+  document.getElementById('recTimer').textContent = `${Math.floor(e/60)}:${String(e%60).padStart(2,'0')}`;
 }
 
-// ─── FINISH & DOWNLOAD ────────────────────────────────────────────────────────
-function finishSession() {
-  goToStep(4);
-}
-
+// ─── DOWNLOAD ─────────────────────────────────────────────────────────────────
 async function downloadPodcast() {
   const btn = document.getElementById('downloadBtn');
-  btn.textContent = '⏳ Building audio...';
-  btn.disabled = true;
+  btn.textContent = '⏳ Building audio...'; btn.disabled = true;
 
   try {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100 });
-    const decodedSegments = [];
+    const buffers = [];
 
-    for (let i = 0; i < recordedSegments.length; i++) {
-      const seg = recordedSegments[i];
+    for (const seg of recordedSegments) {
       if (!seg) continue;
-
       if (seg.type === 'mic' && seg.blob) {
         try {
-          const arrayBuf = await seg.blob.arrayBuffer();
-          const decoded = await audioCtx.decodeAudioData(arrayBuf);
-          decodedSegments.push(decoded);
-        } catch(e) {
-          console.warn('Could not decode mic segment', i, e);
-        }
-      } else if (seg.type === 'tts') {
-        // Generate TTS audio via offline approach using oscillator silence marker
-        // Since we can't capture browser TTS, we'll create a brief silence placeholder
-        // and include a note in the file name that TTS parts were live during recording
-        const silenceDuration = estimateSpeechDuration(seg.text);
-        const silenceBuffer = audioCtx.createBuffer(1, silenceDuration * 44100, 44100);
-        decodedSegments.push(silenceBuffer);
+          const ab = await seg.blob.arrayBuffer();
+          buffers.push(await audioCtx.decodeAudioData(ab));
+        } catch { /* skip */ }
+      } else if (seg.type === 'tts' && seg.audioData) {
+        try {
+          buffers.push(await audioCtx.decodeAudioData(seg.audioData.slice(0)));
+        } catch { /* skip */ }
+      } else if (seg.type === 'tts-fallback') {
+        // silence placeholder for fallback lines
+        const dur = Math.max(1, (seg.text.split(' ').length / 130) * 60);
+        buffers.push(audioCtx.createBuffer(1, Math.floor(dur * 44100), 44100));
       }
     }
 
-    if (decodedSegments.length === 0) {
-      alert('No audio recorded yet. Please complete the recording first.');
-      btn.textContent = '⬇️ Download Podcast';
-      btn.disabled = false;
-      return;
-    }
+    if (!buffers.length) { alert('Nothing to download yet!'); btn.textContent = '⬇️ Download Podcast'; btn.disabled = false; return; }
 
-    // Concatenate all buffers
-    const totalLength = decodedSegments.reduce((sum, b) => sum + b.length, 0);
-    const combined = audioCtx.createBuffer(1, totalLength, 44100);
-    const output = combined.getChannelData(0);
-    let offset = 0;
-    for (const buf of decodedSegments) {
-      const ch = buf.getChannelData(0);
-      output.set(ch, offset);
-      offset += ch.length;
-    }
+    const total = buffers.reduce((s, b) => s + b.length, 0);
+    const combined = audioCtx.createBuffer(1, total, 44100);
+    const out = combined.getChannelData(0);
+    let off = 0;
+    for (const b of buffers) { out.set(b.getChannelData(0), off); off += b.length; }
 
-    // Encode to WAV
     const wav = encodeWAV(combined);
-    const blob = new Blob([wav], { type: 'audio/wav' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'space-exploration-podcast.wav';
-    a.click();
+    const url = URL.createObjectURL(new Blob([wav], { type: 'audio/wav' }));
+    const a = document.createElement('a'); a.href = url; a.download = 'space-exploration-podcast.wav'; a.click();
     URL.revokeObjectURL(url);
 
     btn.textContent = '✅ Downloaded!';
-    setTimeout(() => {
-      btn.textContent = '⬇️ Download Podcast';
-      btn.disabled = false;
-    }, 3000);
-  } catch(e) {
-    console.error(e);
+    setTimeout(() => { btn.textContent = '⬇️ Download Podcast'; btn.disabled = false; }, 3000);
+  } catch (e) {
     alert('Error building audio: ' + e.message);
-    btn.textContent = '⬇️ Download Podcast';
-    btn.disabled = false;
+    btn.textContent = '⬇️ Download Podcast'; btn.disabled = false;
   }
-}
-
-function estimateSpeechDuration(text) {
-  // ~130 words per minute for speech
-  const words = text.split(' ').length;
-  return Math.max(1, (words / 130) * 60);
 }
 
 function encodeWAV(audioBuffer) {
-  const numChannels = 1;
-  const sampleRate = audioBuffer.sampleRate;
   const samples = audioBuffer.getChannelData(0);
-  const numSamples = samples.length;
-  const bytesPerSample = 2;
-  const blockAlign = numChannels * bytesPerSample;
-  const byteRate = sampleRate * blockAlign;
-  const dataSize = numSamples * bytesPerSample;
+  const dataSize = samples.length * 2;
   const buffer = new ArrayBuffer(44 + dataSize);
   const view = new DataView(buffer);
-
-  function writeStr(offset, str) {
-    for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
-  }
-
-  writeStr(0, 'RIFF');
-  view.setUint32(4, 36 + dataSize, true);
-  writeStr(8, 'WAVE');
-  writeStr(12, 'fmt ');
-  view.setUint32(16, 16, true);
-  view.setUint16(20, 1, true);
-  view.setUint16(22, numChannels, true);
-  view.setUint32(24, sampleRate, true);
-  view.setUint32(28, byteRate, true);
-  view.setUint16(32, blockAlign, true);
-  view.setUint16(34, bytesPerSample * 8, true);
-  writeStr(36, 'data');
-  view.setUint32(40, dataSize, true);
-
-  let offset = 44;
-  for (let i = 0; i < numSamples; i++) {
+  const ws = (off, str) => { for (let i = 0; i < str.length; i++) view.setUint8(off + i, str.charCodeAt(i)); };
+  ws(0,'RIFF'); view.setUint32(4,36+dataSize,true); ws(8,'WAVE'); ws(12,'fmt ');
+  view.setUint32(16,16,true); view.setUint16(20,1,true); view.setUint16(22,1,true);
+  view.setUint32(24,44100,true); view.setUint32(28,88200,true);
+  view.setUint16(32,2,true); view.setUint16(34,16,true); ws(36,'data');
+  view.setUint32(40,dataSize,true);
+  let off = 44;
+  for (let i = 0; i < samples.length; i++) {
     const s = Math.max(-1, Math.min(1, samples[i]));
-    view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-    offset += 2;
+    view.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7FFF, true); off += 2;
   }
-
   return buffer;
 }
 
 // ─── NAV ─────────────────────────────────────────────────────────────────────
 function goToStep(n) {
+  [1,2,3,4].forEach(i => { document.getElementById(`step${i}`).style.display = i === n ? 'block' : 'none'; });
   [1,2,3,4].forEach(i => {
-    document.getElementById(`step${i}`).style.display = i === n ? 'block' : 'none';
+    const d = document.getElementById(`dot${i}`);
+    d.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
   });
-
-  [1,2,3,4].forEach(i => {
-    const dot = document.getElementById(`dot${i}`);
-    dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
-  });
-
   [1,2,3].forEach(i => {
-    const line = document.getElementById(`line${i}`);
-    line.className = 'step-line' + (i < n ? ' done' : '');
+    document.getElementById(`line${i}`).className = 'step-line' + (i < n ? ' done' : '');
   });
 }
 
 function resetApp() {
-  scriptLines = [];
-  speakers = {};
-  currentLine = 0;
-  recordedSegments = [];
+  scriptLines = []; speakers = {}; currentLine = 0; recordedSegments = [];
   window.speechSynthesis.cancel();
   document.getElementById('scriptInput').value = '';
+  document.getElementById('charCounterWrap').style.display = 'none';
+  document.getElementById('parseError').style.display = 'none';
+  document.getElementById('apiKeyStatus').style.display = 'none';
   goToStep(1);
 }
 </script>
