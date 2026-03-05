@@ -3,142 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🚀 Podcast Studio</title>
+<title>Podcast Studio</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --deep: #060912; --glow: #4fc3f7; --glow2: #7c4dff;
-    --star: #e8f4fd; --muted: #5a6a8a; --red: #ff4569;
-    --green: #00e676; --gold: #ffd54f;
-    --card: rgba(255,255,255,0.04); --border: rgba(79,195,247,0.15);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--deep); color:var(--star); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
-  body::before {
-    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
-    background-image:
-      radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,0.6),transparent),
-      radial-gradient(1px 1px at 80% 10%,rgba(255,255,255,0.5),transparent),
-      radial-gradient(1px 1px at 50% 70%,rgba(255,255,255,0.4),transparent),
-      radial-gradient(1px 1px at 10% 80%,rgba(255,255,255,0.5),transparent),
-      radial-gradient(1px 1px at 90% 60%,rgba(255,255,255,0.3),transparent),
-      radial-gradient(1px 1px at 35% 90%,rgba(255,255,255,0.6),transparent),
-      radial-gradient(1px 1px at 65% 45%,rgba(255,255,255,0.4),transparent),
-      radial-gradient(2px 2px at 15% 50%,rgba(79,195,247,0.4),transparent),
-      radial-gradient(2px 2px at 75% 85%,rgba(124,77,255,0.3),transparent);
-  }
-  #app { position:relative; z-index:1; max-width:820px; margin:0 auto; padding:30px 20px 60px; }
-  header { text-align:center; margin-bottom:40px; }
-  .logo { font-family:'Orbitron',monospace; font-size:clamp(1.8rem,5vw,2.8rem); font-weight:900; background:linear-gradient(135deg,var(--glow),var(--glow2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; letter-spacing:0.05em; margin-bottom:6px; }
-  .tagline { color:var(--muted); font-size:0.9rem; letter-spacing:0.1em; text-transform:uppercase; }
-
-  /* Steps */
-  .steps { display:flex; align-items:center; justify-content:center; margin-bottom:44px; }
-  .step-dot { width:36px; height:36px; border-radius:50%; border:2px solid var(--muted); display:flex; align-items:center; justify-content:center; font-family:'Orbitron',monospace; font-size:0.75rem; font-weight:700; color:var(--muted); transition:all 0.3s; position:relative; }
-  .step-dot.active { border-color:var(--glow); color:var(--glow); box-shadow:0 0 16px rgba(79,195,247,0.4); }
-  .step-dot.done { border-color:var(--green); background:rgba(0,230,118,0.1); color:var(--green); }
-  .step-label { position:absolute; top:44px; left:50%; transform:translateX(-50%); font-size:0.62rem; white-space:nowrap; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
-  .step-dot.active .step-label { color:var(--glow); }
-  .step-line { width:60px; height:2px; background:var(--border); transition:background 0.3s; }
-  .step-line.done { background:var(--green); }
-
-  /* Card */
-  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; backdrop-filter:blur(8px); }
-  .card-title { font-family:'Orbitron',monospace; font-size:0.82rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--glow); margin-bottom:16px; }
-
-  /* Inputs */
-  textarea, input[type=text], input[type=password] {
-    width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--border);
-    border-radius:10px; color:var(--star); font-family:'DM Sans',sans-serif;
-    font-size:0.9rem; padding:12px 16px; outline:none; transition:border-color 0.2s;
-  }
-  textarea { line-height:1.6; resize:vertical; min-height:220px; }
-  textarea:focus, input[type=text]:focus, input[type=password]:focus { border-color:var(--glow); }
-  textarea::placeholder, input::placeholder { color:var(--muted); }
-
-  /* Buttons */
-  .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 24px; border-radius:50px; border:none; cursor:pointer; font-family:'Orbitron',monospace; font-size:0.75rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; transition:all 0.2s; white-space:nowrap; }
-  .btn:disabled { opacity:0.4; cursor:not-allowed; }
-  .btn-primary { background:linear-gradient(135deg,var(--glow),var(--glow2)); color:white; box-shadow:0 4px 20px rgba(79,195,247,0.3); }
-  .btn-primary:not(:disabled):hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(79,195,247,0.45); }
-  .btn-ghost { background:transparent; color:var(--muted); border:1px solid var(--border); }
-  .btn-ghost:hover { color:var(--star); border-color:var(--muted); }
-  .btn-record { background:radial-gradient(circle,#ff6b6b,var(--red)); color:white; box-shadow:0 4px 24px rgba(255,69,105,0.4); font-size:0.85rem; padding:16px 36px; }
-  .btn-record:hover { transform:scale(1.04); }
-  .btn-record.recording { animation:pulse-rec 1.2s ease-in-out infinite; }
-  @keyframes pulse-rec { 0%,100%{box-shadow:0 4px 24px rgba(255,69,105,0.4)} 50%{box-shadow:0 4px 40px rgba(255,69,105,0.8);transform:scale(1.02)} }
-  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-
-  /* Speaker rows */
-  .speaker-row { display:flex; align-items:center; gap:10px; padding:12px 16px; background:rgba(0,0,0,0.2); border-radius:10px; border:1px solid transparent; flex-wrap:wrap; transition:border-color 0.2s; }
-  .speaker-row.is-me { border-color:rgba(79,195,247,0.3); background:rgba(79,195,247,0.05); }
-  .speaker-name { font-family:'Orbitron',monospace; font-size:0.78rem; font-weight:700; min-width:110px; letter-spacing:0.05em; }
-  .type-btn { padding:5px 12px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--muted); font-size:0.72rem; cursor:pointer; transition:all 0.2s; font-family:'DM Sans',sans-serif; }
-  .type-btn.sel-me { border-color:var(--glow); background:rgba(79,195,247,0.15); color:var(--glow); }
-  .type-btn.sel-tts { border-color:var(--glow2); background:rgba(124,77,255,0.15); color:#b39ddb; }
-  .voice-select { padding:5px 10px; background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:8px; color:var(--star); font-size:0.78rem; outline:none; cursor:pointer; max-width:180px; }
-
-  /* Progress */
-  .prog-wrap { background:rgba(0,0,0,0.3); border-radius:4px; height:4px; margin-bottom:24px; overflow:hidden; }
-  .prog-fill { height:100%; background:linear-gradient(90deg,var(--glow),var(--glow2)); border-radius:4px; transition:width 0.4s; }
-
-  /* Current line */
-  .current-line { font-size:clamp(1.1rem,3vw,1.4rem); line-height:1.65; color:var(--star); padding:24px; background:rgba(0,0,0,0.25); border-radius:12px; border-left:3px solid var(--glow); margin-bottom:20px; min-height:90px; display:flex; align-items:center; }
-  .current-line.tts { border-left-color:var(--glow2); opacity:0.85; }
-
-  /* TTS playing */
-  .tts-indicator { display:none; align-items:center; justify-content:center; gap:8px; color:#b39ddb; font-size:0.85rem; padding:12px 0 16px; }
-  .tts-indicator.visible { display:flex; }
-  .wave-bars { display:flex; align-items:flex-end; gap:3px; height:20px; }
-  .wave-bar { width:3px; background:#b39ddb; border-radius:2px; animation:wave 0.8s ease-in-out infinite; }
-  .wave-bar:nth-child(2){animation-delay:0.1s} .wave-bar:nth-child(3){animation-delay:0.2s} .wave-bar:nth-child(4){animation-delay:0.3s}
-  @keyframes wave { 0%,100%{height:4px} 50%{height:18px} }
-
-  /* Upcoming */
-  .upcoming-line { padding:10px 14px; border-left:2px solid var(--border); margin-bottom:8px; opacity:0.4; }
-  .up-speaker { font-family:'Orbitron',monospace; font-size:0.65rem; color:var(--muted); margin-bottom:2px; }
-  .up-text { font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-  /* Rec controls */
-  .rec-controls { display:flex; align-items:center; justify-content:center; gap:12px; margin-top:20px; flex-wrap:wrap; }
-  .rec-timer { font-family:'Orbitron',monospace; font-size:1.2rem; color:var(--red); letter-spacing:0.1em; min-width:60px; text-align:center; }
-
-  /* Char counter */
-  .char-counter { display:flex; align-items:center; gap:10px; padding:10px 16px; background:rgba(0,0,0,0.2); border-radius:10px; font-size:0.78rem; margin-bottom:16px; }
-  .char-bar-wrap { flex:1; background:rgba(0,0,0,0.3); border-radius:4px; height:6px; overflow:hidden; }
-  .char-bar { height:100%; border-radius:4px; transition:width 0.4s, background 0.4s; }
-
-  /* Alert boxes */
-  .alert { padding:12px 16px; border-radius:8px; font-size:0.83rem; margin-top:12px; line-height:1.5; }
-  .alert-warn { background:rgba(255,213,79,0.08); border:1px solid rgba(255,213,79,0.2); color:var(--gold); }
-  .alert-info { background:rgba(79,195,247,0.08); border:1px solid rgba(79,195,247,0.2); color:var(--glow); }
-  .alert-err { background:rgba(255,69,105,0.08); border:1px solid rgba(255,69,105,0.2); color:var(--red); }
-
-  .hint { font-size:0.78rem; color:var(--muted); margin-top:10px; line-height:1.5; }
-  .hint code { background:rgba(79,195,247,0.1); color:var(--glow); padding:1px 6px; border-radius:4px; }
-  .divider { height:1px; background:var(--border); margin:24px 0; }
-  .center { text-align:center; }
-  .row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
-
-  .api-key-wrap { position:relative; }
-  .api-key-wrap input { padding-right:44px; }
-  .eye-btn { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem; padding:4px; }
-
-  @media(max-width:500px){
-    .speaker-row{flex-direction:column;align-items:flex-start;}
-    .voice-select{max-width:100%;}
-  }
+:root{--deep:#060912;--glow:#4fc3f7;--glow2:#7c4dff;--star:#e8f4fd;--muted:#5a6a8a;--red:#ff4569;--green:#00e676;--gold:#ffd54f;--card:rgba(255,255,255,0.04);--border:rgba(79,195,247,0.15);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--deep);color:var(--star);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,0.6),transparent),radial-gradient(1px 1px at 80% 10%,rgba(255,255,255,0.5),transparent),radial-gradient(1px 1px at 50% 70%,rgba(255,255,255,0.4),transparent),radial-gradient(1px 1px at 10% 80%,rgba(255,255,255,0.5),transparent),radial-gradient(2px 2px at 15% 50%,rgba(79,195,247,0.4),transparent),radial-gradient(2px 2px at 75% 85%,rgba(124,77,255,0.3),transparent);}
+#app{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:30px 20px 60px;}
+header{text-align:center;margin-bottom:40px;}
+.logo{font-family:'Orbitron',monospace;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;background:linear-gradient(135deg,var(--glow),var(--glow2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:0.05em;margin-bottom:6px;}
+.tagline{color:var(--muted);font-size:0.9rem;letter-spacing:0.1em;text-transform:uppercase;}
+.steps{display:flex;align-items:center;justify-content:center;margin-bottom:44px;}
+.step-dot{width:36px;height:36px;border-radius:50%;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:var(--muted);transition:all 0.3s;position:relative;}
+.step-dot.active{border-color:var(--glow);color:var(--glow);box-shadow:0 0 16px rgba(79,195,247,0.4);}
+.step-dot.done{border-color:var(--green);background:rgba(0,230,118,0.1);color:var(--green);}
+.step-label{position:absolute;top:44px;left:50%;transform:translateX(-50%);font-size:0.62rem;white-space:nowrap;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;}
+.step-dot.active .step-label{color:var(--glow);}
+.step-line{width:60px;height:2px;background:var(--border);transition:background 0.3s;}
+.step-line.done{background:var(--green);}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;backdrop-filter:blur(8px);}
+.card-title{font-family:'Orbitron',monospace;font-size:0.82rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--glow);margin-bottom:16px;}
+textarea,input[type=text],input[type=password]{width:100%;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;color:var(--star);font-family:'DM Sans',sans-serif;font-size:0.9rem;padding:12px 16px;outline:none;transition:border-color 0.2s;}
+textarea{line-height:1.6;resize:vertical;min-height:220px;}
+textarea:focus,input:focus{border-color:var(--glow);}
+textarea::placeholder,input::placeholder{color:var(--muted);}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:50px;border:none;cursor:pointer;font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s;white-space:nowrap;}
+.btn:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-primary{background:linear-gradient(135deg,var(--glow),var(--glow2));color:white;box-shadow:0 4px 20px rgba(79,195,247,0.3);}
+.btn-primary:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(79,195,247,0.45);}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-ghost:hover{color:var(--star);border-color:var(--muted);}
+.btn-record{background:radial-gradient(circle,#ff6b6b,var(--red));color:white;box-shadow:0 4px 24px rgba(255,69,105,0.4);font-size:0.85rem;padding:16px 36px;}
+.btn-record:hover{transform:scale(1.04);}
+.btn-record.recording{animation:pulse-rec 1.2s ease-in-out infinite;}
+@keyframes pulse-rec{0%,100%{box-shadow:0 4px 24px rgba(255,69,105,0.4)}50%{box-shadow:0 4px 40px rgba(255,69,105,0.8);transform:scale(1.02)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.speaker-row{display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(0,0,0,0.2);border-radius:10px;border:1px solid transparent;flex-wrap:wrap;row-gap:8px;transition:border-color 0.2s;}
+.speaker-row.is-me{border-color:rgba(79,195,247,0.3);background:rgba(79,195,247,0.05);}
+.speaker-name{font-family:'Orbitron',monospace;font-size:0.78rem;font-weight:700;min-width:100px;letter-spacing:0.05em;}
+.type-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:0.72rem;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.type-btn.sel-me{border-color:var(--glow);background:rgba(79,195,247,0.15);color:var(--glow);}
+.type-btn.sel-tts{border-color:var(--glow2);background:rgba(124,77,255,0.15);color:#b39ddb;}
+.voice-select{padding:5px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;color:var(--star);font-size:0.78rem;outline:none;cursor:pointer;flex:1;min-width:130px;max-width:200px;}
+.preview-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:rgba(79,195,247,0.08);color:var(--glow);font-size:0.85rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+.preview-btn:hover{background:rgba(79,195,247,0.22);border-color:var(--glow);}
+.preview-btn.playing{background:rgba(124,77,255,0.2);border-color:var(--glow2);color:var(--glow2);animation:pulse-prev 1s ease-in-out infinite;}
+@keyframes pulse-prev{0%,100%{opacity:1}50%{opacity:0.45}}
+.prog-wrap{background:rgba(0,0,0,0.3);border-radius:4px;height:4px;margin-bottom:24px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--glow),var(--glow2));border-radius:4px;transition:width 0.4s;}
+.current-line{font-size:clamp(1.1rem,3vw,1.4rem);line-height:1.65;color:var(--star);padding:24px;background:rgba(0,0,0,0.25);border-radius:12px;border-left:3px solid var(--glow);margin-bottom:20px;min-height:90px;display:flex;align-items:center;}
+.current-line.tts{border-left-color:var(--glow2);opacity:0.85;}
+.tts-indicator{display:none;align-items:center;justify-content:center;gap:8px;color:#b39ddb;font-size:0.85rem;padding:12px 0 16px;}
+.tts-indicator.visible{display:flex;}
+.wave-bars{display:flex;align-items:flex-end;gap:3px;height:20px;}
+.wave-bar{width:3px;background:#b39ddb;border-radius:2px;animation:wave 0.8s ease-in-out infinite;}
+.wave-bar:nth-child(2){animation-delay:0.1s}.wave-bar:nth-child(3){animation-delay:0.2s}.wave-bar:nth-child(4){animation-delay:0.3s}
+@keyframes wave{0%,100%{height:4px}50%{height:18px}}
+.upcoming-line{padding:10px 14px;border-left:2px solid var(--border);margin-bottom:8px;opacity:0.4;}
+.up-speaker{font-family:'Orbitron',monospace;font-size:0.65rem;color:var(--muted);margin-bottom:2px;}
+.up-text{font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rec-controls{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:20px;flex-wrap:wrap;}
+.rec-timer{font-family:'Orbitron',monospace;font-size:1.2rem;color:var(--red);letter-spacing:0.1em;min-width:60px;text-align:center;}
+.char-counter{display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(0,0,0,0.2);border-radius:10px;font-size:0.78rem;}
+.char-bar-wrap{flex:1;background:rgba(0,0,0,0.3);border-radius:4px;height:6px;overflow:hidden;}
+.char-bar{height:100%;border-radius:4px;transition:width 0.4s,background 0.4s;}
+.alert{padding:12px 16px;border-radius:8px;font-size:0.83rem;margin-top:12px;line-height:1.5;}
+.alert-warn{background:rgba(255,213,79,0.08);border:1px solid rgba(255,213,79,0.2);color:var(--gold);}
+.alert-info{background:rgba(79,195,247,0.08);border:1px solid rgba(79,195,247,0.2);color:var(--glow);}
+.alert-err{background:rgba(255,69,105,0.08);border:1px solid rgba(255,69,105,0.2);color:var(--red);}
+.hint{font-size:0.78rem;color:var(--muted);margin-top:10px;line-height:1.5;}
+.hint code{background:rgba(79,195,247,0.1);color:var(--glow);padding:1px 6px;border-radius:4px;}
+.divider{height:1px;background:var(--border);margin:24px 0;}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
+.api-key-wrap{position:relative;}
+.api-key-wrap input{padding-right:44px;}
+.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:4px;}
+@media(max-width:540px){.speaker-row{flex-direction:column;align-items:flex-start;}.voice-select{max-width:100%;width:100%;}}
 </style>
 </head>
 <body>
 <div id="app">
   <header>
-    <div class="logo">🚀 Podcast Studio</div>
+    <div class="logo">&#128640; Podcast Studio</div>
     <div class="tagline">Space Exploration Podcast Recorder</div>
   </header>
-
-  <!-- Steps -->
-  <div class="steps" id="stepsBar">
+  <div class="steps">
     <div class="step-dot active" id="dot1">1<span class="step-label">Script</span></div>
     <div class="step-line" id="line1"></div>
     <div class="step-dot" id="dot2">2<span class="step-label">Voices</span></div>
@@ -148,507 +98,403 @@
     <div class="step-dot" id="dot4">4<span class="step-label">Done!</span></div>
   </div>
 
-  <!-- STEP 1: Script + API key -->
   <div id="step1">
     <div class="card">
-      <div class="card-title">🔑 ElevenLabs API Key</div>
-      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:12px;line-height:1.5;">
-        Enter your ElevenLabs API key. It stays on your device and is only sent to ElevenLabs.
-        Get one free at <strong style="color:var(--glow)">elevenlabs.io</strong>.
-      </p>
+      <div class="card-title">&#128273; ElevenLabs API Key</div>
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:12px;line-height:1.5;">Enter your ElevenLabs API key. It stays on your device and is only sent to ElevenLabs. Get one free at <strong style="color:var(--glow)">elevenlabs.io</strong>.</p>
       <div class="api-key-wrap">
         <input type="password" id="apiKeyInput" placeholder="sk_xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off"/>
-        <button class="eye-btn" onclick="toggleKeyVis()" title="Show/hide key">👁</button>
+        <button class="eye-btn" onclick="toggleKeyVis()">&#128065;</button>
       </div>
-      <div id="apiKeyStatus"></div>
+      <div id="apiKeyStatus" style="display:none;"></div>
     </div>
-
     <div class="card">
-      <div class="card-title">📄 Paste Your Script</div>
-      <textarea id="scriptInput" placeholder="Paste your script here. Each line must start with the speaker name:
-
-HOST: Welcome to Space Explorers, the podcast about the final frontier!
-CO-HOST: I'm so excited for today's episode!
-HOST: Today we're talking to Alex about Mars.
-ALEX: Hi! I think we should definitely go to Mars because...
-
-Each new line = one speaking turn."></textarea>
-      <p class="hint">💡 Format each line as <code>SPEAKER NAME: What they say</code>. You can paste directly from Google Docs.</p>
+      <div class="card-title">&#128196; Paste Your Script</div>
+      <textarea id="scriptInput" placeholder="Paste your script here. Format each line as:&#10;&#10;HOST: Welcome to Space Explorers!&#10;CO-HOST: So excited for today!&#10;ALEX: I think we should go to Mars because..."></textarea>
+      <p class="hint">&#128161; Format each line as <code>SPEAKER NAME: What they say</code>. Paste directly from Google Docs.</p>
       <div id="charCounterWrap" style="display:none;margin-top:14px;">
         <div class="char-counter">
-          <span style="color:var(--muted);white-space:nowrap">AI chars:</span>
+          <span style="color:var(--muted);white-space:nowrap;">AI chars:</span>
           <div class="char-bar-wrap"><div class="char-bar" id="charBar" style="width:0%;background:var(--green)"></div></div>
-          <span id="charCount" style="font-family:'Orbitron',monospace;font-size:0.72rem;white-space:nowrap;color:var(--green)">0 / 10,000</span>
+          <span id="charCount" style="font-family:'Orbitron',monospace;font-size:0.72rem;white-space:nowrap;color:var(--green);">0 / 10,000</span>
         </div>
       </div>
       <div id="parseError" class="alert alert-err" style="display:none;"></div>
     </div>
-
-    <div class="row">
-      <button class="btn btn-primary" onclick="parseAndProceed()">Parse Script →</button>
-    </div>
+    <div class="row"><button class="btn btn-primary" onclick="parseAndProceed()">Parse Script &#8594;</button></div>
   </div>
 
-  <!-- STEP 2: Assign voices -->
   <div id="step2" style="display:none;">
     <div class="card">
-      <div class="card-title">🎙️ Assign Voices</div>
-      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:16px;line-height:1.5;">
-        Choose <strong style="color:var(--glow)">That's me! 🎙️</strong> for your own parts (live mic recording)
-        and <strong style="color:#b39ddb">AI Voice 🤖</strong> for everyone else (ElevenLabs TTS).
-        Pick a voice for each AI character from the dropdown.
-      </p>
+      <div class="card-title">&#127897; Assign Voices</div>
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:16px;line-height:1.5;">Choose <strong style="color:var(--glow)">That's me!</strong> for your own parts and <strong style="color:#b39ddb">AI Voice</strong> for everyone else. Pick a voice then tap <strong style="color:var(--glow)">&#9654;</strong> to preview it — free, no quota used!</p>
       <div id="speakerList" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;"></div>
       <div id="voiceAlert" class="alert alert-warn" style="display:none;"></div>
     </div>
     <div class="row">
-      <button class="btn btn-ghost" onclick="goToStep(1)">← Back</button>
-      <button class="btn btn-primary" onclick="startRecording()">Start Recording →</button>
+      <button class="btn btn-ghost" onclick="goToStep(1)">&#8592; Back</button>
+      <button class="btn btn-primary" onclick="startRecording()">Start Recording &#8594;</button>
     </div>
   </div>
 
-  <!-- STEP 3: Recording -->
   <div id="step3" style="display:none;">
     <div class="card">
       <div class="prog-wrap"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-      <div style="text-align:center;font-family:'Orbitron',monospace;font-size:0.7rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:20px;" id="lineCounter">Line 1 of —</div>
-
+      <div id="lineCounter" style="text-align:center;font-family:'Orbitron',monospace;font-size:0.7rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:20px;">Line 1 of -</div>
       <div id="curSpeakerLabel" style="font-family:'Orbitron',monospace;font-size:0.7rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--glow);margin-bottom:8px;"></div>
       <div id="curLineText" class="current-line"></div>
-
       <div class="tts-indicator" id="ttsIndicator">
-        <div class="wave-bars">
-          <div class="wave-bar"></div><div class="wave-bar"></div>
-          <div class="wave-bar"></div><div class="wave-bar"></div>
-        </div>
+        <div class="wave-bars"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
         ElevenLabs voice playing...
       </div>
-
       <div class="rec-controls" id="recControls">
-        <button class="btn btn-record" id="recBtn" onclick="toggleRecord()">⏺ Record</button>
+        <button class="btn btn-record" id="recBtn" onclick="toggleRecord()">&#9210; Record</button>
         <div class="rec-timer" id="recTimer" style="display:none;">0:00</div>
-        <button class="btn btn-ghost" id="retakeBtn" onclick="retakeLine()" style="display:none;">↩ Retake</button>
+        <button class="btn btn-ghost" id="retakeBtn" onclick="retakeLine()" style="display:none;">&#8617; Retake</button>
       </div>
-
       <div class="divider"></div>
       <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;">Upcoming</div>
       <div id="upcomingLines"></div>
     </div>
   </div>
 
-  <!-- STEP 4: Done -->
   <div id="step4" style="display:none;">
-    <div class="card center" style="padding:48px 28px;">
-      <div style="font-size:4rem;margin-bottom:16px;display:inline-block;animation:float 3s ease-in-out infinite;">🚀</div>
+    <div class="card" style="text-align:center;padding:48px 28px;">
+      <div style="font-size:4rem;margin-bottom:16px;display:inline-block;animation:float 3s ease-in-out infinite;">&#128640;</div>
       <div style="font-family:'Orbitron',monospace;font-size:clamp(1.3rem,4vw,1.8rem);font-weight:900;background:linear-gradient(135deg,var(--glow),var(--glow2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;">Mission Complete!</div>
       <p style="color:var(--muted);margin-bottom:28px;line-height:1.6;">Your podcast has been recorded.<br>Click below to download the finished audio.</p>
-      <button class="btn btn-primary" id="downloadBtn" onclick="downloadPodcast()" style="font-size:0.9rem;padding:14px 32px;">⬇️ Download Podcast</button>
+      <button class="btn btn-primary" id="downloadBtn" onclick="downloadPodcast()" style="font-size:0.9rem;padding:14px 32px;">&#11015; Download Podcast</button>
       <p style="font-size:0.75rem;color:var(--muted);margin-top:14px;">Format: WAV audio file</p>
       <div class="divider"></div>
-      <button class="btn btn-ghost" onclick="resetApp()">🔄 Record Another Episode</button>
+      <button class="btn btn-ghost" onclick="resetApp()">&#128260; Record Another Episode</button>
     </div>
   </div>
 </div>
-
 <script>
-// ─── STATE ───────────────────────────────────────────────────────────────────
-let scriptLines = [];
-let speakers = {};
-let elevenVoices = [];
-let currentLine = 0;
-let recordedSegments = [];
-let mediaRecorder = null;
-let recordingChunks = [];
-let recTimerInterval = null;
-let recStartTime = 0;
-const FREE_TIER_LIMIT = 10000;
+var scriptLines=[], speakers={}, elevenVoices=[], currentLine=0, recordedSegments=[];
+var mediaRecorder=null, recordingChunks=[], recTimerInterval=null, recStartTime=0;
+var previewAudio=null;
+var FREE_LIMIT=10000;
 
-function getApiKey() { return document.getElementById('apiKeyInput').value.trim(); }
+function getKey(){ return document.getElementById('apiKeyInput').value.trim(); }
+function toggleKeyVis(){ var i=document.getElementById('apiKeyInput'); i.type=i.type==='password'?'text':'password'; }
 
-function toggleKeyVis() {
-  const inp = document.getElementById('apiKeyInput');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
+function updateCharCounter(lines, spks){
+  var n=0;
+  for(var i=0;i<lines.length;i++){ if(spks[lines[i].speaker] && spks[lines[i].speaker].type==='tts') n+=lines[i].text.length; }
+  var pct=Math.min(100,(n/FREE_LIMIT)*100);
+  var col=pct>90?'#ff4569':pct>70?'#ffd54f':'#00e676';
+  document.getElementById('charBar').style.width=pct+'%';
+  document.getElementById('charBar').style.background=col;
+  document.getElementById('charCount').style.color=col;
+  document.getElementById('charCount').textContent=n.toLocaleString()+' / '+FREE_LIMIT.toLocaleString();
+  document.getElementById('charCounterWrap').style.display='block';
 }
 
-// ─── CHAR COUNTER ─────────────────────────────────────────────────────────────
-function updateCharCounter(lines, spks) {
-  const ttsChars = lines
-    .filter(l => spks[l.speaker]?.type === 'tts')
-    .reduce((sum, l) => sum + l.text.length, 0);
-  const pct = Math.min(100, (ttsChars / FREE_TIER_LIMIT) * 100);
-  const bar = document.getElementById('charBar');
-  const label = document.getElementById('charCount');
-  bar.style.width = pct + '%';
-  bar.style.background = pct > 90 ? '#ff4569' : pct > 70 ? '#ffd54f' : '#00e676';
-  label.style.color = pct > 90 ? '#ff4569' : pct > 70 ? '#ffd54f' : '#00e676';
-  label.textContent = `${ttsChars.toLocaleString()} / ${FREE_TIER_LIMIT.toLocaleString()}`;
-  document.getElementById('charCounterWrap').style.display = 'block';
-}
-
-// ─── STEP 1: PARSE ────────────────────────────────────────────────────────────
-async function parseAndProceed() {
-  document.getElementById('parseError').style.display = 'none';
-  const raw = document.getElementById('scriptInput').value.trim();
-  if (!raw) { showParseError('Please paste your script first.'); return; }
-
-  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-  scriptLines = [];
-  const spkSet = new Set();
-  for (const line of lines) {
-    const ci = line.indexOf(':');
-    if (ci < 1) continue;
-    const spk = line.substring(0, ci).trim().toUpperCase();
-    const text = line.substring(ci + 1).trim();
-    if (spk && text) { scriptLines.push({ speaker: spk, text }); spkSet.add(spk); }
-  }
-  if (!scriptLines.length) { showParseError('No lines found. Make sure each line is formatted as SPEAKER: Text'); return; }
-
-  // Init speakers (default all to tts)
-  speakers = {};
-  [...spkSet].forEach(spk => { speakers[spk] = { type: 'tts', voiceId: '' }; });
-
+async function parseAndProceed(){
+  document.getElementById('parseError').style.display='none';
+  var raw=document.getElementById('scriptInput').value.trim();
+  if(!raw){ showErr('Please paste your script first.'); return; }
+  scriptLines=[];
+  var spkArr=[];
+  raw.split('\n').forEach(function(line){
+    line=line.trim(); if(!line) return;
+    var ci=line.indexOf(':'); if(ci<1) return;
+    var spk=line.substring(0,ci).trim().toUpperCase();
+    var text=line.substring(ci+1).trim();
+    if(spk && text){
+      scriptLines.push({speaker:spk, text:text});
+      if(spkArr.indexOf(spk)===-1) spkArr.push(spk);
+    }
+  });
+  if(!scriptLines.length){ showErr('No lines found. Format each line as SPEAKER: Text'); return; }
+  speakers={};
+  spkArr.forEach(function(spk){ speakers[spk]={type:'tts', voiceId:''}; });
   updateCharCounter(scriptLines, speakers);
-
-  // Fetch ElevenLabs voices
-  const key = getApiKey();
-  if (!key) { showParseError('Please enter your ElevenLabs API key above.'); return; }
-
-  const statusEl = document.getElementById('apiKeyStatus');
-  statusEl.className = 'alert alert-info'; statusEl.style.display = 'block';
-  statusEl.textContent = '⏳ Connecting to ElevenLabs and fetching voices...';
-
-  try {
-    const res = await fetch('https://api.elevenlabs.io/v1/voices', {
-      headers: { 'xi-api-key': key }
-    });
-    if (!res.ok) throw new Error(`ElevenLabs error ${res.status}: ${res.statusText}`);
-    const data = await res.json();
-    elevenVoices = data.voices || [];
-    statusEl.className = 'alert alert-info';
-    statusEl.textContent = `✅ Connected! ${elevenVoices.length} voices available.`;
-  } catch (e) {
-    statusEl.className = 'alert alert-err'; statusEl.style.display = 'block';
-    statusEl.textContent = '❌ Could not connect to ElevenLabs. Check your API key and try again. (' + e.message + ')';
+  var key=getKey();
+  if(!key){ showErr('Please enter your ElevenLabs API key above.'); return; }
+  var st=document.getElementById('apiKeyStatus');
+  st.className='alert alert-info'; st.style.display='block';
+  st.textContent='Connecting to ElevenLabs...';
+  try{
+    var res=await fetch('https://api.elevenlabs.io/v1/voices',{headers:{'xi-api-key':key}});
+    if(!res.ok) throw new Error(res.status+': '+res.statusText);
+    var data=await res.json();
+    elevenVoices=data.voices||[];
+    st.textContent='Connected! '+elevenVoices.length+' voices available.';
+  }catch(e){
+    st.className='alert alert-err';
+    st.textContent='Could not connect to ElevenLabs. Check your API key. ('+e.message+')';
     return;
   }
-
-  renderSpeakerAssignment([...spkSet]);
+  renderSpeakers(spkArr);
   goToStep(2);
 }
 
-function showParseError(msg) {
-  const el = document.getElementById('parseError');
-  el.textContent = msg; el.style.display = 'block';
-}
+function showErr(msg){ var el=document.getElementById('parseError'); el.textContent=msg; el.style.display='block'; }
 
-// ─── STEP 2: VOICES ───────────────────────────────────────────────────────────
-function renderSpeakerAssignment(spkList) {
-  const container = document.getElementById('speakerList');
-  container.innerHTML = '';
-
-  // Build voice options — sort to put child/young-sounding ones first
-  const youngKeywords = ['child','young','kid','girl','boy','lily','charlotte','emily','freya','aria'];
-  const sorted = [...elevenVoices].sort((a, b) => {
-    const aY = youngKeywords.some(k => a.name.toLowerCase().includes(k)) ? 0 : 1;
-    const bY = youngKeywords.some(k => b.name.toLowerCase().includes(k)) ? 0 : 1;
-    return aY - bY;
+function renderSpeakers(spkList){
+  var container=document.getElementById('speakerList'); container.innerHTML='';
+  var youngKw=['child','young','kid','girl','boy','lily','charlotte','emily','freya','aria','sarah','alice'];
+  var sorted=elevenVoices.slice().sort(function(a,b){
+    var aY=youngKw.some(function(k){ return a.name.toLowerCase().indexOf(k)>=0; })?0:1;
+    var bY=youngKw.some(function(k){ return b.name.toLowerCase().indexOf(k)>=0; })?0:1;
+    return aY-bY;
   });
+  var voiceOpts=sorted.map(function(v){
+    var age=(v.labels && v.labels.age)?' - '+v.labels.age:'';
+    return '<option value="'+v.voice_id+'">'+v.name+age+'</option>';
+  }).join('');
 
-  const voiceOpts = sorted.map(v =>
-    `<option value="${v.voice_id}">${v.name}${v.labels?.age ? ' · ' + v.labels.age : ''}</option>`
-  ).join('');
-
-  spkList.forEach((spk, i) => {
-    // Pre-assign voices cycling through available list
-    if (!speakers[spk].voiceId && sorted.length > 0) {
-      speakers[spk].voiceId = sorted[i % sorted.length].voice_id;
-    }
-
-    const row = document.createElement('div');
-    row.className = 'speaker-row';
-    row.id = `row-${spk}`;
-    row.innerHTML = `
-      <div class="speaker-name">${spk}</div>
-      <div style="display:flex;gap:6px;">
-        <button class="type-btn" onclick="setSpeakerType('${spk}','me',this)">🎙️ That's me!</button>
-        <button class="type-btn sel-tts" onclick="setSpeakerType('${spk}','tts',this)">🤖 AI Voice</button>
-      </div>
-      <select class="voice-select" id="voice-${spk}" onchange="speakers['${spk}'].voiceId=this.value">
-        ${voiceOpts}
-      </select>
-    `;
+  spkList.forEach(function(spk, i){
+    if(!speakers[spk].voiceId && sorted.length>0) speakers[spk].voiceId=sorted[i%sorted.length].voice_id;
+    var safeid=spk.replace(/[^A-Z0-9]/g,'_');
+    var row=document.createElement('div');
+    row.className='speaker-row'; row.id='row-'+safeid;
+    row.innerHTML=
+      '<div class="speaker-name">'+spk+'</div>'+
+      '<div style="display:flex;gap:6px;flex-shrink:0;">'+
+        '<button class="type-btn" onclick="setType(\''+spk+'\',\'me\',this)">&#127897; That\'s me!</button>'+
+        '<button class="type-btn sel-tts" onclick="setType(\''+spk+'\',\'tts\',this)">&#129302; AI Voice</button>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;" id="vwrap-'+safeid+'">'+
+        '<select class="voice-select" id="voice-'+safeid+'" onchange="onVoiceChange(\''+spk+'\',this.value)">'+voiceOpts+'</select>'+
+        '<button class="preview-btn" id="prevbtn-'+safeid+'" title="Preview this voice" onclick="previewVoice(\''+spk+'\')">&#9654;</button>'+
+      '</div>';
     container.appendChild(row);
-
-    // Set the select to the pre-assigned voice
-    setTimeout(() => {
-      const sel = document.getElementById(`voice-${spk}`);
-      if (sel) sel.value = speakers[spk].voiceId;
-    }, 0);
+    (function(s, sid){ setTimeout(function(){ var el=document.getElementById('voice-'+sid); if(el) el.value=speakers[s].voiceId; },0); })(spk, safeid);
   });
 }
 
-function setSpeakerType(spk, type, btn) {
-  speakers[spk].type = type;
-  const row = document.getElementById(`row-${spk}`);
-  row.className = 'speaker-row' + (type === 'me' ? ' is-me' : '');
-  row.querySelectorAll('.type-btn').forEach(b => b.className = 'type-btn');
-  btn.className = `type-btn sel-${type}`;
-  const voiceSel = document.getElementById(`voice-${spk}`);
-  if (voiceSel) voiceSel.style.opacity = type === 'me' ? '0.3' : '1';
+function getSafeId(spk){ return spk.replace(/[^A-Z0-9]/g,'_'); }
 
-  updateCharCounter(scriptLines, speakers);
-  const hasMe = Object.values(speakers).some(s => s.type === 'me');
-  const alertEl = document.getElementById('voiceAlert');
-  alertEl.style.display = hasMe ? 'none' : 'block';
-  alertEl.textContent = "⚠️ Mark at least one speaker as 'That's me!' first.";
+function onVoiceChange(spk, voiceId){
+  speakers[spk].voiceId=voiceId;
+  stopPreview();
 }
 
-// ─── STEP 3: RECORDING ────────────────────────────────────────────────────────
-function startRecording() {
-  const hasMe = Object.values(speakers).some(s => s.type === 'me');
-  if (!hasMe) {
-    document.getElementById('voiceAlert').style.display = 'block';
-    return;
+function stopPreview(){
+  if(previewAudio){ previewAudio.pause(); previewAudio=null; }
+  document.querySelectorAll('.preview-btn').forEach(function(b){ b.classList.remove('playing'); b.innerHTML='&#9654;'; });
+}
+
+function previewVoice(spk){
+  var sid=getSafeId(spk);
+  var btn=document.getElementById('prevbtn-'+sid);
+  if(btn && btn.classList.contains('playing')){ stopPreview(); return; }
+  stopPreview();
+  var voiceId=speakers[spk] && speakers[spk].voiceId;
+  if(!voiceId) return;
+  var voice=null;
+  for(var i=0;i<elevenVoices.length;i++){ if(elevenVoices[i].voice_id===voiceId){ voice=elevenVoices[i]; break; } }
+  var previewUrl=voice && voice.preview_url;
+  if(btn){ btn.classList.add('playing'); btn.innerHTML='&#9209;'; }
+  if(previewUrl){
+    previewAudio=new Audio(previewUrl);
+    previewAudio.onended=(function(b){ return function(){ b.classList.remove('playing'); b.innerHTML='&#9654;'; previewAudio=null; }; })(btn);
+    previewAudio.onerror=(function(s,v,b){ return function(){ stopPreview(); previewViaApi(s,v,b); }; })(spk,voiceId,btn);
+    previewAudio.play().catch((function(s,v,b){ return function(){ stopPreview(); previewViaApi(s,v,b); }; })(spk,voiceId,btn));
+  } else {
+    previewViaApi(spk, voiceId, btn);
   }
-  currentLine = 0;
-  recordedSegments = Array(scriptLines.length).fill(null);
+}
+
+async function previewViaApi(spk, voiceId, btn){
+  try{
+    var res=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+voiceId,{
+      method:'POST',
+      headers:{'xi-api-key':getKey(),'Content-Type':'application/json'},
+      body:JSON.stringify({text:'Hi, I am your podcast co-host today!',model_id:'eleven_multilingual_v2',voice_settings:{stability:0.4,similarity_boost:0.8}})
+    });
+    if(!res.ok) throw new Error('failed');
+    var blobUrl=URL.createObjectURL(await res.blob());
+    previewAudio=new Audio(blobUrl);
+    previewAudio.onended=(function(b,u){ return function(){ b.classList.remove('playing'); b.innerHTML='&#9654;'; previewAudio=null; URL.revokeObjectURL(u); }; })(btn,blobUrl);
+    previewAudio.play();
+  }catch(e){
+    if(btn){ btn.classList.remove('playing'); btn.innerHTML='&#9654;'; }
+    alert('Could not play preview. Check your API key and internet connection.');
+  }
+}
+
+function setType(spk, type, btn){
+  speakers[spk].type=type;
+  var sid=getSafeId(spk);
+  var row=document.getElementById('row-'+sid);
+  if(row){ row.className='speaker-row'+(type==='me'?' is-me':''); }
+  if(row){ row.querySelectorAll('.type-btn').forEach(function(b){ b.className='type-btn'; }); }
+  btn.className='type-btn sel-'+type;
+  var vw=document.getElementById('vwrap-'+sid);
+  if(vw) vw.style.opacity=type==='me'?'0.3':'1';
+  if(type==='me') stopPreview();
+  updateCharCounter(scriptLines, speakers);
+  var hasMe=Object.values(speakers).some(function(s){ return s.type==='me'; });
+  var al=document.getElementById('voiceAlert');
+  al.style.display=hasMe?'none':'block';
+  al.textContent="Mark at least one speaker as 'That's me!' first.";
+}
+
+function startRecording(){
+  var hasMe=Object.values(speakers).some(function(s){ return s.type==='me'; });
+  if(!hasMe){ document.getElementById('voiceAlert').style.display='block'; return; }
+  stopPreview();
+  currentLine=0;
+  recordedSegments=[];
+  for(var i=0;i<scriptLines.length;i++) recordedSegments.push(null);
   goToStep(3);
   renderCurrentLine();
 }
 
-function renderCurrentLine() {
-  if (currentLine >= scriptLines.length) { goToStep(4); return; }
-
-  const total = scriptLines.length;
-  document.getElementById('progFill').style.width = Math.round((currentLine / total) * 100) + '%';
-  document.getElementById('lineCounter').textContent = `Line ${currentLine + 1} of ${total}`;
-
-  const { speaker, text } = scriptLines[currentLine];
-  const isMe = speakers[speaker]?.type === 'me';
-
-  const labelEl = document.getElementById('curSpeakerLabel');
-  const textEl = document.getElementById('curLineText');
-  labelEl.textContent = speaker;
-  labelEl.style.color = isMe ? 'var(--glow)' : '#b39ddb';
-  textEl.textContent = text;
-  textEl.className = 'current-line' + (isMe ? '' : ' tts');
-
-  // Upcoming
-  const upEl = document.getElementById('upcomingLines');
-  upEl.innerHTML = '';
-  for (let i = currentLine + 1; i < Math.min(currentLine + 4, total); i++) {
-    const l = scriptLines[i];
-    const d = document.createElement('div');
-    d.className = 'upcoming-line';
-    d.innerHTML = `<div class="up-speaker">${l.speaker}</div><div class="up-text">${l.text}</div>`;
+function renderCurrentLine(){
+  if(currentLine>=scriptLines.length){ goToStep(4); return; }
+  var total=scriptLines.length;
+  document.getElementById('progFill').style.width=Math.round((currentLine/total)*100)+'%';
+  document.getElementById('lineCounter').textContent='Line '+(currentLine+1)+' of '+total;
+  var spk=scriptLines[currentLine].speaker;
+  var text=scriptLines[currentLine].text;
+  var isMe=speakers[spk] && speakers[spk].type==='me';
+  document.getElementById('curSpeakerLabel').textContent=spk;
+  document.getElementById('curSpeakerLabel').style.color=isMe?'var(--glow)':'#b39ddb';
+  document.getElementById('curLineText').textContent=text;
+  document.getElementById('curLineText').className='current-line'+(isMe?'':' tts');
+  var upEl=document.getElementById('upcomingLines'); upEl.innerHTML='';
+  for(var i=currentLine+1;i<Math.min(currentLine+4,total);i++){
+    var l=scriptLines[i]; var d=document.createElement('div');
+    d.className='upcoming-line';
+    d.innerHTML='<div class="up-speaker">'+l.speaker+'</div><div class="up-text">'+l.text+'</div>';
     upEl.appendChild(d);
   }
-
-  const recControls = document.getElementById('recControls');
-  const ttsInd = document.getElementById('ttsIndicator');
-
-  if (isMe) {
-    recControls.style.display = 'flex';
-    ttsInd.className = 'tts-indicator';
-    document.getElementById('retakeBtn').style.display = 'none';
-    document.getElementById('recTimer').style.display = 'none';
-    document.getElementById('recBtn').textContent = '⏺ Record';
-    document.getElementById('recBtn').className = 'btn btn-record';
+  var rc=document.getElementById('recControls'), ti=document.getElementById('ttsIndicator');
+  if(isMe){
+    rc.style.display='flex'; ti.className='tts-indicator';
+    document.getElementById('retakeBtn').style.display='none';
+    document.getElementById('recTimer').style.display='none';
+    document.getElementById('recBtn').textContent='Record';
+    document.getElementById('recBtn').className='btn btn-record';
   } else {
-    recControls.style.display = 'none';
-    ttsInd.className = 'tts-indicator visible';
-    playElevenLabs(text, speaker, () => {
-      ttsInd.className = 'tts-indicator';
-      currentLine++;
-      renderCurrentLine();
+    rc.style.display='none'; ti.className='tts-indicator visible';
+    playElevenLabs(text, spk, function(){ ti.className='tts-indicator'; currentLine++; renderCurrentLine(); });
+  }
+}
+
+async function playElevenLabs(text, spk, onDone){
+  var key=getKey(); var voiceId=speakers[spk] && speakers[spk].voiceId;
+  if(!key || !voiceId){ onDone(); return; }
+  try{
+    var res=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+voiceId,{
+      method:'POST',
+      headers:{'xi-api-key':key,'Content-Type':'application/json'},
+      body:JSON.stringify({text:text,model_id:'eleven_multilingual_v2',voice_settings:{stability:0.4,similarity_boost:0.8,style:0.3,use_speaker_boost:true}})
     });
+    if(!res.ok) throw new Error('TTS failed: '+res.status);
+    var ab=await res.arrayBuffer();
+    recordedSegments[currentLine]={type:'tts', audioData:ab};
+    var ctx=new(window.AudioContext||window.webkitAudioContext)();
+    var decoded=await ctx.decodeAudioData(ab.slice(0));
+    var src=ctx.createBufferSource();
+    src.buffer=decoded; src.connect(ctx.destination);
+    src.onended=function(){ ctx.close(); onDone(); };
+    src.start();
+  }catch(e){
+    console.error(e);
+    recordedSegments[currentLine]={type:'tts-fallback', text:text};
+    var u=new SpeechSynthesisUtterance(text); u.pitch=1.6; u.rate=1.0;
+    u.onend=onDone; u.onerror=onDone; window.speechSynthesis.speak(u);
   }
 }
 
-// ─── ELEVENLABS TTS ──────────────────────────────────────────────────────────
-async function playElevenLabs(text, speaker, onDone) {
-  const key = getApiKey();
-  const voiceId = speakers[speaker]?.voiceId;
-  if (!key || !voiceId) { onDone(); return; }
-
-  try {
-    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-      method: 'POST',
-      headers: { 'xi-api-key': key, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        text,
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: { stability: 0.4, similarity_boost: 0.8, style: 0.3, use_speaker_boost: true }
-      })
-    });
-    if (!res.ok) throw new Error('ElevenLabs TTS failed: ' + res.status);
-
-    const arrayBuffer = await res.arrayBuffer();
-    // Store the raw audio for later download
-    recordedSegments[currentLine] = { type: 'tts', audioData: arrayBuffer };
-
-    // Play it
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const decoded = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
-    const source = audioCtx.createBufferSource();
-    source.buffer = decoded;
-    source.connect(audioCtx.destination);
-    source.onended = () => { audioCtx.close(); onDone(); };
-    source.start();
-  } catch (e) {
-    console.error('ElevenLabs error:', e);
-    // Fall back to browser TTS so recording isn't blocked
-    recordedSegments[currentLine] = { type: 'tts-fallback', text };
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.pitch = 1.6; utter.rate = 1.0;
-    utter.onend = onDone; utter.onerror = onDone;
-    window.speechSynthesis.speak(utter);
-  }
+async function toggleRecord(){
+  if(mediaRecorder && mediaRecorder.state==='recording') stopMic(); else await startMic();
 }
 
-// ─── MICROPHONE ───────────────────────────────────────────────────────────────
-async function toggleRecord() {
-  if (mediaRecorder && mediaRecorder.state === 'recording') {
-    stopMic();
-  } else {
-    await startMic();
-  }
+async function startMic(){
+  try{
+    var stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    recordingChunks=[];
+    mediaRecorder=new MediaRecorder(stream);
+    mediaRecorder.ondataavailable=function(e){ if(e.data.size>0) recordingChunks.push(e.data); };
+    mediaRecorder.onstop=handleMicStop; mediaRecorder.start();
+    document.getElementById('recBtn').textContent='Stop Recording';
+    document.getElementById('recBtn').className='btn btn-record recording';
+    document.getElementById('recTimer').style.display='block';
+    recStartTime=Date.now();
+    recTimerInterval=setInterval(updateTimer,500);
+  }catch(e){ alert('Microphone access denied. Please allow microphone access and reload.'); }
 }
 
-async function startMic() {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    recordingChunks = [];
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordingChunks.push(e.data); };
-    mediaRecorder.onstop = handleMicStop;
-    mediaRecorder.start();
-    document.getElementById('recBtn').textContent = '⏹ Stop Recording';
-    document.getElementById('recBtn').className = 'btn btn-record recording';
-    document.getElementById('recTimer').style.display = 'block';
-    recStartTime = Date.now();
-    recTimerInterval = setInterval(updateTimer, 500);
-  } catch {
-    alert('Microphone access denied. Please allow microphone access in Chrome settings and reload.');
-  }
-}
-
-function stopMic() {
-  if (mediaRecorder) { mediaRecorder.stop(); mediaRecorder.stream.getTracks().forEach(t => t.stop()); }
+function stopMic(){
+  if(mediaRecorder){ mediaRecorder.stop(); mediaRecorder.stream.getTracks().forEach(function(t){ t.stop(); }); }
   clearInterval(recTimerInterval);
-  document.getElementById('recBtn').textContent = '⏺ Record';
-  document.getElementById('recBtn').className = 'btn btn-record';
-  document.getElementById('recTimer').style.display = 'none';
+  document.getElementById('recBtn').textContent='Record';
+  document.getElementById('recBtn').className='btn btn-record';
+  document.getElementById('recTimer').style.display='none';
 }
 
-function handleMicStop() {
-  const blob = new Blob(recordingChunks, { type: 'audio/webm' });
-  recordedSegments[currentLine] = { type: 'mic', blob };
-  document.getElementById('retakeBtn').style.display = 'inline-flex';
-  setTimeout(() => {
-    document.getElementById('retakeBtn').style.display = 'none';
-    currentLine++;
-    renderCurrentLine();
-  }, 800);
+function handleMicStop(){
+  var blob=new Blob(recordingChunks,{type:'audio/webm'});
+  recordedSegments[currentLine]={type:'mic', blob:blob};
+  document.getElementById('retakeBtn').style.display='inline-flex';
+  setTimeout(function(){ document.getElementById('retakeBtn').style.display='none'; currentLine++; renderCurrentLine(); }, 800);
 }
 
-function retakeLine() {
-  document.getElementById('retakeBtn').style.display = 'none';
-  recordedSegments[currentLine] = null;
-  renderCurrentLine();
+function retakeLine(){ document.getElementById('retakeBtn').style.display='none'; recordedSegments[currentLine]=null; renderCurrentLine(); }
+
+function updateTimer(){
+  var e=Math.floor((Date.now()-recStartTime)/1000);
+  document.getElementById('recTimer').textContent=Math.floor(e/60)+':'+(e%60<10?'0':'')+(e%60);
 }
 
-function updateTimer() {
-  const e = Math.floor((Date.now() - recStartTime) / 1000);
-  document.getElementById('recTimer').textContent = `${Math.floor(e/60)}:${String(e%60).padStart(2,'0')}`;
-}
-
-// ─── DOWNLOAD ─────────────────────────────────────────────────────────────────
-async function downloadPodcast() {
-  const btn = document.getElementById('downloadBtn');
-  btn.textContent = '⏳ Building audio...'; btn.disabled = true;
-
-  try {
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100 });
-    const buffers = [];
-
-    for (const seg of recordedSegments) {
-      if (!seg) continue;
-      if (seg.type === 'mic' && seg.blob) {
-        try {
-          const ab = await seg.blob.arrayBuffer();
-          buffers.push(await audioCtx.decodeAudioData(ab));
-        } catch { /* skip */ }
-      } else if (seg.type === 'tts' && seg.audioData) {
-        try {
-          buffers.push(await audioCtx.decodeAudioData(seg.audioData.slice(0)));
-        } catch { /* skip */ }
-      } else if (seg.type === 'tts-fallback') {
-        // silence placeholder for fallback lines
-        const dur = Math.max(1, (seg.text.split(' ').length / 130) * 60);
-        buffers.push(audioCtx.createBuffer(1, Math.floor(dur * 44100), 44100));
-      }
+async function downloadPodcast(){
+  var btn=document.getElementById('downloadBtn');
+  btn.textContent='Building audio...'; btn.disabled=true;
+  try{
+    var ctx=new(window.AudioContext||window.webkitAudioContext)({sampleRate:44100});
+    var bufs=[];
+    for(var i=0;i<recordedSegments.length;i++){
+      var seg=recordedSegments[i]; if(!seg) continue;
+      if(seg.type==='mic' && seg.blob){ try{ bufs.push(await ctx.decodeAudioData(await seg.blob.arrayBuffer())); }catch(e){} }
+      else if(seg.type==='tts' && seg.audioData){ try{ bufs.push(await ctx.decodeAudioData(seg.audioData.slice(0))); }catch(e){} }
+      else if(seg.type==='tts-fallback'){ var d=Math.max(1,(seg.text.split(' ').length/130)*60); bufs.push(ctx.createBuffer(1,Math.floor(d*44100),44100)); }
     }
-
-    if (!buffers.length) { alert('Nothing to download yet!'); btn.textContent = '⬇️ Download Podcast'; btn.disabled = false; return; }
-
-    const total = buffers.reduce((s, b) => s + b.length, 0);
-    const combined = audioCtx.createBuffer(1, total, 44100);
-    const out = combined.getChannelData(0);
-    let off = 0;
-    for (const b of buffers) { out.set(b.getChannelData(0), off); off += b.length; }
-
-    const wav = encodeWAV(combined);
-    const url = URL.createObjectURL(new Blob([wav], { type: 'audio/wav' }));
-    const a = document.createElement('a'); a.href = url; a.download = 'space-exploration-podcast.wav'; a.click();
+    if(!bufs.length){ alert('Nothing to download yet!'); btn.textContent='Download Podcast'; btn.disabled=false; return; }
+    var total=0; for(var i=0;i<bufs.length;i++) total+=bufs[i].length;
+    var combined=ctx.createBuffer(1,total,44100); var out=combined.getChannelData(0);
+    var off=0; for(var i=0;i<bufs.length;i++){ out.set(bufs[i].getChannelData(0),off); off+=bufs[i].length; }
+    var wav=encodeWAV(combined);
+    var url=URL.createObjectURL(new Blob([wav],{type:'audio/wav'}));
+    var a=document.createElement('a'); a.href=url; a.download='space-exploration-podcast.wav'; a.click();
     URL.revokeObjectURL(url);
-
-    btn.textContent = '✅ Downloaded!';
-    setTimeout(() => { btn.textContent = '⬇️ Download Podcast'; btn.disabled = false; }, 3000);
-  } catch (e) {
-    alert('Error building audio: ' + e.message);
-    btn.textContent = '⬇️ Download Podcast'; btn.disabled = false;
-  }
+    btn.textContent='Downloaded!';
+    setTimeout(function(){ btn.textContent='Download Podcast'; btn.disabled=false; },3000);
+  }catch(e){ alert('Error: '+e.message); btn.textContent='Download Podcast'; btn.disabled=false; }
 }
 
-function encodeWAV(audioBuffer) {
-  const samples = audioBuffer.getChannelData(0);
-  const dataSize = samples.length * 2;
-  const buffer = new ArrayBuffer(44 + dataSize);
-  const view = new DataView(buffer);
-  const ws = (off, str) => { for (let i = 0; i < str.length; i++) view.setUint8(off + i, str.charCodeAt(i)); };
-  ws(0,'RIFF'); view.setUint32(4,36+dataSize,true); ws(8,'WAVE'); ws(12,'fmt ');
-  view.setUint32(16,16,true); view.setUint16(20,1,true); view.setUint16(22,1,true);
-  view.setUint32(24,44100,true); view.setUint32(28,88200,true);
-  view.setUint16(32,2,true); view.setUint16(34,16,true); ws(36,'data');
-  view.setUint32(40,dataSize,true);
-  let off = 44;
-  for (let i = 0; i < samples.length; i++) {
-    const s = Math.max(-1, Math.min(1, samples[i]));
-    view.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7FFF, true); off += 2;
-  }
-  return buffer;
+function encodeWAV(ab){
+  var s=ab.getChannelData(0), ds=s.length*2;
+  var buf=new ArrayBuffer(44+ds), v=new DataView(buf);
+  function ws(o,str){ for(var i=0;i<str.length;i++) v.setUint8(o+i,str.charCodeAt(i)); }
+  ws(0,'RIFF'); v.setUint32(4,36+ds,true); ws(8,'WAVE'); ws(12,'fmt ');
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,44100,true); v.setUint32(28,88200,true);
+  v.setUint16(32,2,true); v.setUint16(34,16,true); ws(36,'data'); v.setUint32(40,ds,true);
+  var o=44;
+  for(var i=0;i<s.length;i++){ var x=Math.max(-1,Math.min(1,s[i])); v.setInt16(o,x<0?x*0x8000:x*0x7FFF,true); o+=2; }
+  return buf;
 }
 
-// ─── NAV ─────────────────────────────────────────────────────────────────────
-function goToStep(n) {
-  [1,2,3,4].forEach(i => { document.getElementById(`step${i}`).style.display = i === n ? 'block' : 'none'; });
-  [1,2,3,4].forEach(i => {
-    const d = document.getElementById(`dot${i}`);
-    d.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
-  });
-  [1,2,3].forEach(i => {
-    document.getElementById(`line${i}`).className = 'step-line' + (i < n ? ' done' : '');
-  });
+function goToStep(n){
+  for(var i=1;i<=4;i++) document.getElementById('step'+i).style.display=i===n?'block':'none';
+  for(var i=1;i<=4;i++){ var d=document.getElementById('dot'+i); d.className='step-dot'+(i<n?' done':i===n?' active':''); }
+  for(var i=1;i<=3;i++) document.getElementById('line'+i).className='step-line'+(i<n?' done':'');
 }
 
-function resetApp() {
-  scriptLines = []; speakers = {}; currentLine = 0; recordedSegments = [];
-  window.speechSynthesis.cancel();
-  document.getElementById('scriptInput').value = '';
-  document.getElementById('charCounterWrap').style.display = 'none';
-  document.getElementById('parseError').style.display = 'none';
-  document.getElementById('apiKeyStatus').style.display = 'none';
+function resetApp(){
+  scriptLines=[]; speakers={}; currentLine=0; recordedSegments=[];
+  stopPreview(); window.speechSynthesis.cancel();
+  document.getElementById('scriptInput').value='';
+  document.getElementById('charCounterWrap').style.display='none';
+  document.getElementById('parseError').style.display='none';
+  document.getElementById('apiKeyStatus').style.display='none';
   goToStep(1);
 }
 </script>
