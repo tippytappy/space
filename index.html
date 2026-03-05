@@ -187,6 +187,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 
 <script>
 var scriptLines=[], speakers={}, elevenVoices=[], filteredVoices=[], currentLine=0, recordedSegments=[];
+var savedApiKey="";
 var mediaRecorder=null, recordingChunks=[], recTimerInterval=null, recStartTime=0;
 var previewAudio=null;
 var FREE_LIMIT=10000;
@@ -195,7 +196,7 @@ var FREE_LIMIT=10000;
 var BRITISH_KEYWORDS=['british','english','uk','london','manchester','scottish','welsh','irish','cockney','posh','bbc'];
 var CONVERSATIONAL_KEYWORDS=['conversational','casual','friendly','natural','warm','young','energetic','cheerful'];
 
-function getKey(){ return document.getElementById('apiKeyInput').value.trim(); }
+function getKey(){ return savedApiKey||document.getElementById("apiKeyInput").value.trim(); }
 function toggleKeyVis(){ var i=document.getElementById('apiKeyInput'); i.type=i.type==='password'?'text':'password'; }
 
 function filterVoices(voices){
@@ -264,6 +265,7 @@ async function parseAndProceed(){
     if(!res.ok) throw new Error(res.status+': '+res.statusText);
     var data=await res.json();
     elevenVoices=data.voices||[];
+    savedApiKey=key;
     filteredVoices=filterVoices(elevenVoices);
     var britishCount=filteredVoices.filter(function(v){
       var all=JSON.stringify(v.labels||{}).toLowerCase()+' '+(v.name||'').toLowerCase();
