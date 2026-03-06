@@ -188,6 +188,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 <script>
 var scriptLines=[], speakers={}, elevenVoices=[], filteredVoices=[], currentLine=0, recordedSegments=[];
 var savedApiKey="";
+var sharedAudioCtx=null;
 var mediaRecorder=null, recordingChunks=[], recTimerInterval=null, recStartTime=0;
 var previewAudio=null;
 var FREE_LIMIT=10000;
@@ -420,6 +421,8 @@ function startRecording(){
   var hasMe=Object.values(speakers).some(function(s){ return s.type==='me'; });
   if(!hasMe){ document.getElementById('voiceAlert').style.display='block'; return; }
   stopPreview();
+  // Initialise (or resume) AudioContext on this user gesture — required on Android
+  getAudioCtx();
   currentLine=0;
   recordedSegments=[];
   for(var i=0;i<scriptLines.length;i++) recordedSegments.push(null);
@@ -459,39 +462,84 @@ function renderCurrentLine(){
   }
 }
 
-// ── PITCH SHIFT via AudioContext ──────────────────────────────────────────────
-// We decode the ElevenLabs MP3, then replay at a modified playbackRate.
-// playbackRate > 1 = faster + higher pitch (child-like). 1.0 = normal.
+// ── AUDIO CONTEXT (single shared instance for whole session) ─────────────────
+function getAudioCtx(){
+  if(!sharedAudioCtx || sharedAudioCtx.state==='closed'){
+    sharedAudioCtx=new(window.AudioContext||window.webkitAudioContext)({sampleRate:44100});
+  }
+  // Resume if suspended (Android requires user gesture to start audio)
+  if(sharedAudioCtx.state==='suspended') sharedAudioCtx.resume();
+  return sharedAudioCtx;
+}
+
+// Play a decoded AudioBuffer through shared context, resolve when done
+function playBuffer(buffer, pitchRate){
+  return new Promise(function(resolve){
+    var ctx=getAudioCtx();
+    var src=ctx.createBufferSource();
+    src.buffer=buffer;
+    src.playbackRate.value=pitchRate||1.0;
+    src.connect(ctx.destination);
+    // Small safety gap: resolve 80ms after audio ends to avoid overlap
+    src.onended=function(){ setTimeout(resolve, 80); };
+    src.start();
+  });
+}
+
+// ── ELEVENLABS TTS ────────────────────────────────────────────────────────────
 async function playElevenLabs(text,spk,onDone){
-  var key=getKey(); var voiceId=speakers[spk]&&speakers[spk].voiceId;
-  if(!key||!voiceId){ onDone(); return; }
-  var pitchRate=speakers[spk].pitch||1.0;
+  var key=getKey();
+  var voiceId=speakers[spk]&&speakers[spk].voiceId;
+  var pitchRate=(speakers[spk]&&speakers[spk].pitch)||1.0;
+
+  // Show error in the TTS indicator area rather than silently falling back
+  function showTtsError(msg){
+    var ti=document.getElementById('ttsIndicator');
+    ti.innerHTML='<span style="color:var(--red)">&#9888; '+msg+' — tap to retry</span>';
+    ti.className='tts-indicator visible';
+    ti.style.cursor='pointer';
+    ti.onclick=function(){ ti.onclick=null; ti.style.cursor=''; renderCurrentLine(); };
+  }
+
+  if(!key){
+    showTtsError('No API key found');
+    return;
+  }
+  if(!voiceId){
+    showTtsError('No voice selected');
+    return;
+  }
+
   try{
     var res=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+voiceId,{
       method:'POST',
       headers:{'xi-api-key':key,'Content-Type':'application/json'},
-      body:JSON.stringify({text:text,model_id:'eleven_multilingual_v2',voice_settings:{stability:0.4,similarity_boost:0.8,style:0.3,use_speaker_boost:true}})
+      body:JSON.stringify({
+        text:text,
+        model_id:'eleven_multilingual_v2',
+        voice_settings:{stability:0.5,similarity_boost:0.8,style:0.2,use_speaker_boost:true}
+      })
     });
-    if(!res.ok) throw new Error('TTS failed: '+res.status);
+    if(!res.ok){
+      var errText=await res.text();
+      throw new Error('ElevenLabs '+res.status+': '+errText.substring(0,120));
+    }
     var ab=await res.arrayBuffer();
+    if(!ab || ab.byteLength===0) throw new Error('Empty audio response');
 
-    // Store original (unpitched) audio for download
+    // Store for download (keep original unmodified bytes)
     recordedSegments[currentLine]={type:'tts',audioData:ab,pitch:pitchRate};
 
-    var ctx=new(window.AudioContext||window.webkitAudioContext)();
+    // Decode and play through shared AudioContext
+    var ctx=getAudioCtx();
     var decoded=await ctx.decodeAudioData(ab.slice(0));
-    var src=ctx.createBufferSource();
-    src.buffer=decoded;
-    src.playbackRate.value=pitchRate; // pitch shift: >1 = higher/younger
-    src.connect(ctx.destination);
-    src.onended=function(){ ctx.close(); onDone(); };
-    src.start();
+    await playBuffer(decoded, pitchRate);
+    onDone();
+
   }catch(e){
-    console.error(e);
-    recordedSegments[currentLine]={type:'tts-fallback',text:text};
-    var u=new SpeechSynthesisUtterance(text);
-    u.pitch=Math.min(2,pitchRate*1.2); u.rate=Math.min(1.8,pitchRate);
-    u.onend=onDone; u.onerror=onDone; window.speechSynthesis.speak(u);
+    console.error('ElevenLabs error:',e);
+    showTtsError(e.message||'ElevenLabs error');
+    // Don't auto-advance — let user tap to retry the line
   }
 }
 
@@ -609,6 +657,7 @@ function goToStep(n){
 
 function resetApp(){
   scriptLines=[]; speakers={}; currentLine=0; recordedSegments=[];
+  if(sharedAudioCtx){ try{ sharedAudioCtx.close(); }catch(e){} sharedAudioCtx=null; }
   stopPreview(); window.speechSynthesis.cancel();
   document.getElementById('scriptInput').value='';
   document.getElementById('charCounterWrap').style.display='none';
